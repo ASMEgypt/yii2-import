@@ -1,0 +1,19 @@
+<?php
+class m160901_122438_addEmailParamsToSettings extends \execut\yii\migration\Migration
+{
+    public function initInverter(\execut\yii\migration\Inverter $i)
+    {
+        $i->table('import_settings');
+        $i->table('import_files_sources')
+            ->update([
+                'class' => 'execut/import/sources/Imap',
+            ], 'key=\'email\'')
+            ->update([
+                'class' => '',
+            ], 'key=\'manual\'')
+            ->addColumn('class', $this->string()->notNull())
+            ->addColumn('login', $this->string())
+            ->addColumn('password', $this->string())
+            ->addColumn('host', $this->string());
+    }
+}

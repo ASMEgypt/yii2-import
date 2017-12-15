@@ -1,0 +1,19 @@
+<?php
+class m160802_134427_addFilesStatusesEditableField extends \execut\yii\migration\Migration
+{
+    // Use safeUp/safeDown to run migration code within a transaction
+    public function initInverter(\execut\yii\migration\Inverter $i)
+    {
+//        $i->table('import_files_statuses')
+//            ->addColumn('is_editable', $this->boolean())
+//            ->update([
+//                'is_editable' => true,
+//            ], [
+//                'key' => [
+//                    'deleting',
+//                    'loading',
+//                ],
+//            ])
+//            ->alterColumnSetNotNull('is_editable');
+    }
+}

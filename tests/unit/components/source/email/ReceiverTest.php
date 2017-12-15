@@ -1,0 +1,106 @@
+<?php
+/**
+ * Created by PhpStorm.
+ * User: execut
+ * Date: 9/27/16
+ * Time: 4:50 PM
+ */
+
+namespace execut\import\components\source\adapter\email;
+
+
+use Ddeboer\Imap\Message\Attachment;
+use execut\TestCase;
+use execut\actions\action\adapter\File;
+use roopz\imap\Imap;
+use roopz\imap\IncomingMail;
+use roopz\imap\IncomingMailAttachment;
+
+class ReceiverTest extends TestCase
+{
+    public function testGetMails() {
+        $imap = $this->getMockBuilder(Imap::className())->setMethods([
+            'searchMailBox',
+            'getMail',
+        ])->getMock();
+        $imap->method('searchMailBox')->with('UNSEEN SINCE "' . date('d F Y') . '"')->willReturn([
+            1,
+        ]);
+        $imap->expects($this->once())->method('searchMailBox')->with('UNSEEN SINCE "' . date('d F Y') . '"')->willReturn([]);
+
+        $imap->expects($this->once())->method('getMail')->with(1, false)->willReturn(new IncomingMail());
+
+        $receiver = new Receiver([
+            'imap' => $imap,
+        ]);
+        $receiver->getMails();
+        $result = $receiver->getMails();
+        $this->assertCount(1, $result);
+        $this->assertInstanceOf(Mail::class, $result[0]);
+    }
+
+    public function testFiltrate() {
+        $file = new File();
+        $emails = [
+            new Mail([
+                'id' => 1,
+                'subject' => 'Test',
+                'attachments' => [
+                    $file,
+                ],
+            ]),
+        ];
+
+        $filter = $this->getMockBuilder(Filter::class)->setMethods([
+            'filtrate'
+        ])->getMock();
+        $filter->expects($this->once())->method('filtrate')->with($emails)->willReturn($emails);
+
+        $imap = $this->getMockBuilder(Imap::className())->setMethods([
+            'markMailAsRead',
+        ])->getMock();
+        $imap->expects($this->once())->method('markMailAsRead')->with(1);
+
+        $receiver = $this->getMockBuilder(Receiver::class)->setConstructorArgs([
+            [
+                'imap' => $imap,
+                'filter' => $filter,
+            ],
+        ])->setMethods(['_getMails'])->getMock();
+        $receiver->method('_getMails')->willReturn($emails);
+        $this->assertEquals($emails, $receiver->getMails());
+    }
+
+    public function testCreateMailFromImap() {
+        $imapMail = new IncomingMail();
+        $attributes = [
+            'id' => 1,
+            'subject' => 'subject',
+            'fromAddress' => 'address@address.ru'
+        ];
+        foreach ($attributes as $key => $attribute) {
+            $imapMail->$key = $attribute;
+        }
+
+        $attachment = new IncomingMailAttachment();
+        $attachment->name = 'fileName';
+        $attachment->filePath = 'filePath';
+        $imapMail->addAttachment($attachment);
+
+        $mail = Receiver::createMailFromImap($imapMail);
+        $this->assertEquals([
+            'id' => 1,
+            'subject' => 'subject',
+            'sender' => 'address@address.ru',
+        ], [
+            'id' => $mail->id,
+            'subject' => $mail->subject,
+            'sender' => $mail->sender,
+        ]);
+
+        $this->assertCount(1, $mail->attachments);
+        $file = $mail->attachments[0];
+        $this->assertEquals('filePath', $file->filePath);
+        $this->assertEquals('fileName', $file->fileName);
+    }
+}

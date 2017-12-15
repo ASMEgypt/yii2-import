@@ -1,0 +1,31 @@
+{
+  "name": "execut/yii2-import",
+  "version": "0.0.1",
+  "description": "Import data module for yii2",
+  "keywords": ["yii2", "import", "activeRecord", "mail import", "files import"],
+  "homepage": "https://github.com/execut/yii2-import",
+  "type": "yii2-extension",
+  "license": "Apache-2.0",
+  "authors": [
+    {
+      "name": "eXeCUT"
+    }
+  ],
+  "minimum-stability": "stable",
+  "require": {
+    "execut/yii2-base": "*",
+    "execut/yii2-migration": "*",
+    "execut/yii2-actions": "*",
+    "execut/yii2-navigation": "~1.2",
+    "execut/yii2-multiprocess": "*",
+    "execut/yii2-import-scheduler": "*",
+    "kartik-v/yii2-date-range": "*",
+    "unclead/yii2-multiple-input": "dev-master",
+    "roopz/yii2-imap": "*"
+  },
+  "autoload": {
+    "psr-4": {
+      "execut\\import\\": ""
+    }
+  }
+}

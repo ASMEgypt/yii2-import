@@ -1,0 +1,56 @@
+<?php
+/**
+ * Created by PhpStorm.
+ * User: execut
+ * Date: 12/14/17
+ * Time: 1:39 PM
+ */
+return [
+    \execut\import\models\File::MODEL_NAME => '{n,plural,=0{Файлов} =1{Файл} other{Файлы}}',
+    'Import Setting' => 'Настройки',
+    'Import Files Statuse' => 'Статус',
+    'Import Files Source' => 'Источник загрузки',
+    'Name' => 'Название',
+    'Extension' => 'Расширение',
+    'Mime Type' => 'Тип',
+    'Created' => 'Создано',
+    'Updated' => 'Обновлено',
+    'Rows Count' => 'Всего',
+    'Rows Errors' => 'Ошибок',
+    'Rows Success' => 'Успешно',
+    'Start Date' => 'Начало',
+    'End Date' => 'Конец',
+    'Progress' => 'Прогресс',
+    'ErrorsPercent' => 'Доля ошибок',
+    'EventsCount' => 'События',
+    'ContentFile' => 'Файл',
+    'Md5' => 'Кеш',
+    'EventStatus' => 'Статус события',
+
+    'ignored_lines' => 'Пропустить строк',
+    'email' => 'Шаблон почты отправителя',
+    'email_title_match' => 'Шаблон темы письма',
+    'csv_enclosure' => 'Символ для окружения текста',
+    'csv_delimiter' => 'Символ разделителя столбцов',
+    'import_files_source_id' => 'Источник захвата файла',
+    'import_files_encoding_id' => 'Кодировка файла',
+    'is_check_mime_type' => 'Проверять mime-тип',
+    'ftp_host' => 'Адрес FTP-сервера',
+    'ftp_port' => 'Порт FTP-сервера',
+    'ftp_timeout' => 'Таймаут соединения',
+    'ftp_ssl' => 'Использовать ssl-шифрование',
+    'ftp_login' => 'Логин',
+    'ftp_password' => 'Пароль',
+    'ftp_dir' => 'Путь к директории файла',
+    'ftp_file_name' => 'Название файла',
+    'importFilesSource.name' => 'Источник захвата',
+    'site_host' => 'Url адрес сайта',
+    'site_auth_url' => 'Url адрес для авторизации',
+    'site_auth_method' => 'Http метод авторизации',
+    'site_login_field' => 'Название поля логина',
+    'site_password_field' => 'Название поля пароля',
+    'site_other_fields' => 'Дополнительные поля и их значения в Json',
+    'site_login' => 'Логин',
+    'site_password' => 'Пароль',
+    'site_file_url' => 'Url адрес файла',
+];
