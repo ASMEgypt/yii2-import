@@ -15,6 +15,7 @@
     "execut/yii2-dependencies": "*",
     "execut/yii2-migration": "*",
     "execut/yii2-actions": "*",
+    "execut/yii2-crud-fields": "*",
     "execut/yii2-navigation": "*",
     "execut/yii2-multiprocess": "*",
     "roopz/yii2-imap": "dev-master"
