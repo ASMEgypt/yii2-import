@@ -12,6 +12,7 @@
   ],
   "require": {
     "execut/yii2-base": "*",
+    "execut/yii2-dependencies": "*",
     "execut/yii2-migration": "*",
     "execut/yii2-actions": "*",
     "execut/yii2-navigation": "*",
