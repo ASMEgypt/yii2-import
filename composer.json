@@ -1,6 +1,5 @@
 {
   "name": "execut/yii2-import",
-  "version": "0.0.1",
   "description": "Import data module for yii2",
   "keywords": ["yii2", "import", "activeRecord", "mail import", "files import"],
   "homepage": "https://github.com/execut/yii2-import",
