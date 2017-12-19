@@ -16,7 +16,7 @@
     "execut/yii2-actions": "*",
     "execut/yii2-navigation": "*",
     "execut/yii2-multiprocess": "*",
-    "roopz/yii2-imap": "@stable"
+    "roopz/yii2-imap": "dev-master"
   },
   "autoload": {
     "psr-4": {
