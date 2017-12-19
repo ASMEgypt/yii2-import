@@ -10,14 +10,13 @@
       "name": "eXeCUT"
     }
   ],
-  "minimum-stability": "stable",
   "require": {
     "execut/yii2-base": "*",
     "execut/yii2-migration": "*",
     "execut/yii2-actions": "*",
     "execut/yii2-navigation": "*",
     "execut/yii2-multiprocess": "*",
-    "roopz/yii2-imap": "*"
+    "roopz/yii2-imap": "stable"
   },
   "autoload": {
     "psr-4": {
