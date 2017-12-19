@@ -15,11 +15,8 @@
     "execut/yii2-base": "*",
     "execut/yii2-migration": "*",
     "execut/yii2-actions": "*",
-    "execut/yii2-navigation": "~1.2",
+    "execut/yii2-navigation": "*",
     "execut/yii2-multiprocess": "*",
-    "execut/yii2-import-scheduler": "*",
-    "kartik-v/yii2-date-range": "*",
-    "unclead/yii2-multiple-input": "dev-master",
     "roopz/yii2-imap": "*"
   },
   "autoload": {
