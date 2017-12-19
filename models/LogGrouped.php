@@ -1,24 +1,17 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: execut
- * Date: 9/21/16
- * Time: 3:56 PM
- */
 
-namespace execut\import\models\forms;
-
-
-use yii\base\Component;
-use yii\data\ActiveDataProvider;
-use yii\data\ArrayDataProvider;
+namespace execut\import\models;
+use execut\crudFields\Behavior;
+use execut\crudFields\BehaviorStub;
+use execut\crudFields\ModelsHelperTrait;
+use yii\behaviors\TimestampBehavior;
 use yii\db\Expression;
 
-class ImportLogsGrouped extends ImportLogs
+class LogGrouped extends Log
 {
     public $logsCount = null;
-    public function getDataProvider() {
-        $dataProvider = parent::getDataProvider();
+    public function search() {
+        $dataProvider = parent::search();
 //        $dataProvider->keys = 'level';
         $q = $dataProvider->query;
         $q->select([

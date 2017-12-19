@@ -93,7 +93,7 @@ class File extends ActiveRecord
      */
     public function getSource()
     {
-        return $this->hasOne(\execut\import\models\FilesSource::className(), ['id' => 'import_files_source_id'])->inverseOf('importFiles');
+        return $this->hasOne(\execut\import\models\FilesSource::className(), ['id' => 'import_files_source_id'])->inverseOf('files');
     }
 
     /**
@@ -101,7 +101,7 @@ class File extends ActiveRecord
      */
     public function getStatuse()
     {
-        return $this->hasOne(\execut\import\models\FilesStatuse::className(), ['id' => 'import_files_statuse_id'])->inverseOf('importFiles');
+        return $this->hasOne(\execut\import\models\FilesStatuse::className(), ['id' => 'import_files_statuse_id'])->inverseOf('files');
     }
 
     /**
@@ -109,7 +109,7 @@ class File extends ActiveRecord
      */
     public function getSetting()
     {
-        return $this->hasOne(\execut\import\models\Setting::className(), ['id' => 'import_setting_id'])->inverseOf('importFiles');
+        return $this->hasOne(\execut\import\models\Setting::className(), ['id' => 'import_setting_id'])->inverseOf('files');
     }
 
     /**
@@ -117,14 +117,14 @@ class File extends ActiveRecord
      */
     public function getUse()
     {
-        return $this->hasOne(\execut\import\models\User::className(), ['id' => 'use_id'])->inverseOf('importFiles');
+        return $this->hasOne(\execut\import\models\User::className(), ['id' => 'use_id'])->inverseOf('files');
     }
 
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getImportLogs()
+    public function getLogs()
     {
-        return $this->hasMany(\execut\import\models\Log::className(), ['import_file_id' => 'id'])->inverseOf('importFile');
+        return $this->hasMany(\execut\import\models\Log::className(), ['import_file_id' => 'id'])->inverseOf('file');
     }
 }

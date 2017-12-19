@@ -56,8 +56,8 @@ class FilesStatuse extends ActiveRecord
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getImportFiles()
+    public function getFiles()
     {
-        return $this->hasMany(\execut\import\models\File::className(), ['import_files_statuse_id' => 'id'])->inverseOf('importFilesStatuse');
+        return $this->hasMany(\execut\import\models\File::className(), ['import_files_statuse_id' => 'id'])->inverseOf('filesStatuse');
     }
 }

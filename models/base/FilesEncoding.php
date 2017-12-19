@@ -56,8 +56,8 @@ class FilesEncoding extends ActiveRecord
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getImportSettings()
+    public function getSettings()
     {
-        return $this->hasMany(\execut\import\models\Setting::className(), ['import_files_encoding_id' => 'id'])->inverseOf('importFilesEncoding');
+        return $this->hasMany(\execut\import\models\Setting::className(), ['import_files_encoding_id' => 'id'])->inverseOf('filesEncoding');
     }
 }

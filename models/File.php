@@ -10,15 +10,10 @@ use execut\crudFields\ModelsHelperTrait;
 use execut\import\components\ToArrayConverter;
 use execut\import\models\forms\ImportLogsGrouped;
 use execut\import\models\forms\ImportLogs;
-use execut\scheduler\components\RulesParser;
-use execut\scheduler\models\SchedulerEvents;
 use execut\crudFields\fields\File as FileField;
 
 use yii\behaviors\TimestampBehavior;
-use yii\data\ActiveDataProvider;
 use yii\db\Expression;
-use yii\grid\ActionColumn;
-use yii\helpers\ArrayHelper;
 use yii\helpers\FileHelper;
 use yii\web\UploadedFile;
 
@@ -43,11 +38,6 @@ class File extends base\File
     use ModelsHelperTrait, BehaviorStub;
 
     const MODEL_NAME = '{n,plural,=0{Files} =1{File} other{Files}}';
-    const EVENT_SUCCESS = 'success';
-    const EVENT_WAITING = 'waiting';
-    const EVENT_24_HOUR = '24 hour limit';
-    const EVENT_EXPIRED = 'expired';
-
     public $eventsCount = null;
     protected $rows = null;
     public $contentFile = null;
@@ -72,13 +62,14 @@ class File extends base\File
                 'fields' => $this->getStandardFields(['visible', 'name'], [
                     'contentFile' => [
                         'class' => FileField::class,
-                        'required' => true,
                         'attribute' => 'contentFile',
                         'md5Attribute' => 'md5',
                         'dataAttribute' => 'content',
                         'downloadUrl' => [
                             '/import/files/download'
                         ],
+                        'required' => true,
+                        'allowedExtensions' => $this->getAllowedExtensions(),
                     ],
                     'import_setting_id' => [
                         'class' => HasOneSelect2::class,
@@ -87,9 +78,6 @@ class File extends base\File
                         'url' => [
                             '/import/settings'
                         ],
-                        'with' => [
-                            'setting.schedulerEvents',
-                        ]
                     ],
                     'import_files_statuse_id' => [
                         'class' => HasOneSelect2::class,
@@ -115,20 +103,20 @@ class File extends base\File
                         'attribute' => 'rows_success',
                         'displayOnly' => true,
                     ],
-                    'eventsCount' => [
-                        'attribute' => 'eventsCount',
-                        'column' => [
-                            'filter' => [
-                                '0' => '0',
-                                '1' => '>0',
-                            ],
-                        ],
-                        'scope' => function ($q, $model) {
-                            $q->byEventsCount($model->eventsCount)
-                                ->withEventsCount();
-                        },
-                        'displayOnly' => true,
-                    ],
+//                    'eventsCount' => [
+//                        'attribute' => 'eventsCount',
+//                        'column' => [
+//                            'filter' => [
+//                                '0' => '0',
+//                                '1' => '>0',
+//                            ],
+//                        ],
+//                        'scope' => function ($q, $model) {
+//                            $q->byEventsCount($model->eventsCount)
+//                                ->withEventsCount();
+//                        },
+//                        'displayOnly' => true,
+//                    ],
                     'progress' => [
                         'attribute' => 'progress',
                         'field' => [
@@ -161,11 +149,6 @@ class File extends base\File
                         'attribute' => 'end_date',
                         'displayOnly' => true,
                     ],
-                    'eventStatus' => [
-                        'attribute' => 'eventStatus',
-                        'displayOnly' => true,
-                        'rules' => false,
-                    ],
                 ]),
                 'plugins' => \yii::$app->getModule('import')->getFilesCrudFieldsPlugins(),
             ],
@@ -186,10 +169,10 @@ class File extends base\File
         unset($select[array_search('content', $select)]);
 
         $sort = $dp->sort;
-        $sort->attributes['eventsCount'] = [
-            'asc' => ['eventsCount' => SORT_ASC],
-            'desc' => ['eventsCount' => SORT_DESC],
-        ];
+//        $sort->attributes['eventsCount'] = [
+//            'asc' => ['eventsCount' => SORT_ASC],
+//            'desc' => ['eventsCount' => SORT_DESC],
+//        ];
 
         $sort->attributes['progress'] = [
             'asc' => ['progress' => SORT_ASC],
@@ -229,68 +212,6 @@ class File extends base\File
         return $this->import_files_statuse_id === FilesStatuse::getIdByKey(FilesStatuse::LOADED);
     }
 
-    public function getEventStatus()
-    {
-        if (!$this->setting) {
-            return;
-        }
-
-        /**
-         * @var SchedulerEvents[] $events
-         */
-        $events = $this->setting->schedulerEvents;
-        if ($this->isError()) {
-            return self::EVENT_EXPIRED;
-        }
-
-        if (empty($events)) {
-            return self::EVENT_SUCCESS;
-        } else {
-            foreach ($events as $event) {
-                if ($event->rec_type === 'none') {
-                    continue;
-                }
-
-                $parserParams = [
-                    'rule' => $event->rec_type,
-                    'duration' => $event->event_length,
-                    'startDate' => $event->start_date,
-                    'endDate' => $event->end_date,
-                    'currentDate' => date('Y-m-d H:i:s'),
-                    'checkDate' => $this->start_date,
-                ];
-
-                $parser = new RulesParser($parserParams);
-
-                $result = $parser->check();
-                if ($result === 0 || $result === 1) {
-                    if (!$this->isComplete()) {
-                        if ($result === 0) {
-                            if (!$this->isLoading()) {
-                                return self::EVENT_EXPIRED;
-                            }
-
-                            return self::EVENT_WAITING;
-                        } else {
-                            if (strtotime($this->start_date) - time() < 3600 * 24) {
-                                return self::EVENT_24_HOUR;
-                            } else {
-                                return self::EVENT_EXPIRED;
-                            }
-                        }
-                    }
-
-                    return self::EVENT_SUCCESS;
-                } else {
-                    return self::EVENT_EXPIRED;
-                }
-            }
-            return;
-        }
-    }
-
-//    public function beforeValidate() {}
-
 
     public function getAllowedExtensions() {
         return [
@@ -318,50 +239,6 @@ class File extends base\File
         return $q->withErrorsPercent()->withProgress();
     }
 
-//    public function rules() {
-//        $rules = parent::rules();
-//        unset($rules['content']);
-//        return array_merge([
-//            [['import_setting_id'], 'checkWhatSheetsIsNotEmpty'],
-//            [['contentFile'], 'safe'],
-//            [['name'], 'default', 'value' => function () {
-//                if (!empty($this->contentFile)) {
-//                    return $this->contentFile->name;
-//                }
-//            }],
-//            [['md5'], 'default', 'value' => function () {
-//                if (!empty($this->content)) {
-//                    return md5($this->content);
-//                }
-//            }],
-//            [['import_files_source_id'], 'default', 'value' => function () {
-//                return FilesSource::find()->byKey('manual')->createCommand()->queryScalar();
-//            }],
-//            [['extension'], 'default', 'value' => function () {
-//                if ($this->contentFile) {
-//                    return $this->contentFile->extension;
-//                }
-//            }],
-//            [['mime_type'], 'default', 'value' => function () {
-//                if ($this->contentFile) {
-//                    return $this->contentFile->type;
-//                }
-//            }],
-////            [['contentFile'], 'default', 'value' => function () {
-////                $value = new UploadedFile();
-////                $filePath = tempnam('/tmp', 'upload_');
-////                file_put_contents($filePath, $this->content);
-////                $value->name = $this->name;
-////                $info = pathinfo($filePath);
-////                $value->tempName = $filePath;
-////                $value->size = filesize($filePath);
-////                $value->type = $this->extension;
-////                return $value;
-////            }],
-//            [['contentFile'], 'file', 'skipOnEmpty' => true, 'checkExtensionByMimeType' => false, 'extensions' => implode(',', $this->getAllowedExtensions())],
-//        ], $rules);
-//    }
-
     public function isStop() {
         return File::find()->isStop()->byId($this->id)->count() > 0;
     }
@@ -383,7 +260,6 @@ class File extends base\File
     public function triggerLoading() {
         $this->deleteLogs();
         $this->start_date = date('Y-m-d H:i:s');
-//        $this->rows_count = $this->calculatedSetsCount;
         $this->rows_errors = 0;
         $this->rows_success = 0;
         $this->setStatus(FilesStatuse::LOADING);
@@ -519,7 +395,7 @@ class File extends base\File
     }
 
     public function deleteLogs() {
-        return ImportLogs::deleteAll(['import_file_id' => $this->id]);
+        return Log::deleteAll(['import_file_id' => $this->id]);
     }
 
     public function checkWhatSheetsIsNotEmpty() {
@@ -553,23 +429,23 @@ class File extends base\File
     }
 
     public function getImportLogsForm() {
-        $result = $this->getImportLogs();
+        $result = $this->getLogs();
         $result->modelClass = ImportLogs::className();
 
         return $result;
     }
 
-    public function getImportLogsFormGroupedByCategory() {
-        $result = $this->getImportLogs();
-        $result->modelClass = ImportLogsGrouped::className();
+    public function getLogsFormGroupedByCategory() {
+        $result = $this->getLogs();
+        $result->modelClass = LogGrouped::className();
 
         return $result;
     }
 
-    public function getImportLogs()
+    public function getLogs()
     {
-        $result = parent::getImportLogs(); // TODO: Change the autogenerated stub
-        $result->modelClass = ImportLogs::className();
+        $result = parent::getLogs(); // TODO: Change the autogenerated stub
+        $result->modelClass = Log::className();
 
         return $result;
     }

@@ -83,7 +83,7 @@ class Log extends ActiveRecord
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getImportSettingsValue()
+    public function getSettingsValue()
     {
         return $this->hasOne(\execut\import\models\SettingsValue::className(), ['id' => 'import_settings_value_id'])->inverseOf('importLogs');
     }

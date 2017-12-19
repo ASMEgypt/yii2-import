@@ -20,8 +20,8 @@ use yii\helpers\ArrayHelper;
  * @property string $import_settings_set_id
  * @property string $number_delimiter
  *
- * @property \execut\import\models\Log[] $importLogs
- * @property \execut\import\models\SettingsSet $importSettingsSet
+ * @property \execut\import\models\Log[] $logs
+ * @property \execut\import\models\SettingsSet $settingsSet
  */
 class SettingsValue extends ActiveRecord
 {
@@ -36,16 +36,16 @@ class SettingsValue extends ActiveRecord
     /**
      * @inheritdoc
      */
-    public function rules()
-    {
-        return ArrayHelper::merge(parent::rules(), [
-            [['created', 'updated'], 'safe'],
-            [['type', 'import_settings_set_id'], 'required'],
-            [['import_settings_set_id'], 'integer'],
-            [['type', 'column_nbr', 'format', 'value_string', 'value_option', 'number_delimiter'], 'string', 'max' => 255],
-            [['import_settings_set_id'], 'exist', 'skipOnError' => true, 'targetClass' => SettingsSet::className(), 'targetAttribute' => ['import_settings_set_id' => 'id']],
-        ]);
-    }
+//    public function rules()
+//    {
+//        return ArrayHelper::merge(parent::rules(), [
+//            [['created', 'updated'], 'safe'],
+//            [['type', 'import_settings_set_id'], 'required'],
+//            [['import_settings_set_id'], 'integer'],
+//            [['type', 'column_nbr', 'format', 'value_string', 'value_option', 'number_delimiter'], 'string', 'max' => 255],
+//            [['import_settings_set_id'], 'exist', 'skipOnError' => true, 'targetClass' => SettingsSet::className(), 'targetAttribute' => ['import_settings_set_id' => 'id']],
+//        ]);
+//    }
 
     /**
      * @inheritdoc
@@ -69,16 +69,16 @@ class SettingsValue extends ActiveRecord
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getImportLogs()
+    public function getLogs()
     {
-        return $this->hasMany(\execut\import\models\Log::className(), ['import_settings_value_id' => 'id'])->inverseOf('importSettingsValue');
+        return $this->hasMany(\execut\import\models\Log::className(), ['import_settings_value_id' => 'id'])->inverseOf('settingsValue');
     }
 
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getImportSettingsSet()
+    public function getSettingsSet()
     {
-        return $this->hasOne(\execut\import\models\SettingsSet::className(), ['id' => 'import_settings_set_id'])->inverseOf('importSettingsValues');
+        return $this->hasOne(\execut\import\models\SettingsSet::className(), ['id' => 'import_settings_set_id'])->inverseOf('settingsValues');
     }
 }

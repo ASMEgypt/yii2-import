@@ -8,11 +8,11 @@ use execut\crudFields\fields\Boolean;
 use execut\crudFields\fields\DropDown;
 use execut\crudFields\fields\Email;
 use execut\crudFields\fields\Group;
+use execut\crudFields\fields\HasManyMultipleInput;
 use execut\crudFields\fields\NumberField;
 use execut\crudFields\ModelsHelperTrait;
 use execut\import\components\Source;
-use execut\importScheduler\models\ImportSettingsVsSchedulerEvents;
-use execut\scheduler\models\SchedulerEvents;
+use lhs\Yii2SaveRelationsBehavior\SaveRelationsBehavior;
 use Yii;
 use yii\behaviors\TimestampBehavior;
 use yii\db\Expression;
@@ -40,19 +40,11 @@ use yii\helpers\Json;
 class Setting extends base\Setting
 {
     use ModelsHelperTrait, BehaviorStub;
-    const MODEL_NAME = '{n,plural,=0{Files} =1{File} other{Files}}';
+    const MODEL_NAME = '{n,plural,=0{Setting} =1{Setting} other{Settings}}';
     public static function find()
     {
         return new queries\Setting(static::class);
     }
-
-//    public function rules()
-//    {
-//        return ArrayHelper::merge(parent::rules(), [
-//            [['email'], 'email'],
-//            ['ftp_ssl', 'default', 'value' => false,],
-//        ]);
-//    }
 
     public function getSource() {
         $adapter = $this->filesSource->getAdapterForSetting($this);
@@ -66,6 +58,12 @@ class Setting extends base\Setting
     public function behaviors()
     {
         return [
+            'relationsSaver' => [
+                'class' => SaveRelationsBehavior::class,
+                'relations' => [
+                    'settingsSheets'
+                ],
+            ],
             'fields' => [
                 'class' => Behavior::class,
                 'module' => 'import',
@@ -73,6 +71,7 @@ class Setting extends base\Setting
                     'ignored_lines' => [
                         'class' => NumberField::class,
                         'attribute' => 'ignored_lines',
+                        'required' => true,
                     ],
                     'is_check_mime_type' => [
                         'class' => Boolean::class,
@@ -92,6 +91,7 @@ class Setting extends base\Setting
                         'class' => DropDown::class,
                         'attribute' => 'import_files_source_id',
                         'relation' => 'filesSource',
+                        'required' => true,
                     ],
                     'emailGroup' => [
                         'class' => Group::class,
@@ -105,71 +105,82 @@ class Setting extends base\Setting
                         'attribute'=> 'email_title_match',
                     ],
                     'import_files_encoding_id' => [
+                        'class' => DropDown::class,
                         'attribute' => 'import_files_encoding_id',
-                        'relation' => $this->importFilesEncoding,
+                        'relation' => 'filesEncoding',
+                        'required' => true,
                     ],
-//                    [
-//                        'group'=>true,
-//                        'label'=>'Настройки FTP',
-//                        'rowOptions'=>['class'=>$labelClass]
-//                    ],
-//                    [
-//                        'attribute' => 'ftp_host',
-//                    ],
-//                    [
-//                        'type' => DetailView::INPUT_CHECKBOX,
-//                        'attribute' => 'ftp_ssl',
-//                    ],
-//                    [
-//                        'attribute' => 'ftp_port',
-//                    ],
-//                    [
-//                        'attribute' => 'ftp_timeout',
-//                    ],
-//                    [
-//                        'attribute' => 'ftp_login',
-//                    ],
-//                    [
-//                        'attribute' => 'ftp_password',
-//                    ],
-//                    [
-//                        'attribute' => 'ftp_dir',
-//                    ],
-//                    [
-//                        'attribute' => 'ftp_file_name',
-//                    ],
-//                    [
-//                        'group'=>true,
-//                        'label'=>'Настройки Сайта',
-//                        'rowOptions'=>['class'=>$labelClass]
-//                    ],
-//                    [
-//                        'attribute' => 'site_host',
-//                    ],
-//                    [
-//                        'attribute' => 'site_auth_url',
-//                    ],
-//                    [
-//                        'attribute' => 'site_auth_method',
-//                    ],
-//                    [
-//                        'attribute' => 'site_login_field',
-//                    ],
-//                    [
-//                        'attribute' => 'site_password_field',
-//                    ],
-//                    [
-//                        'attribute' => 'site_other_fields',
-//                    ],
-//                    [
-//                        'attribute' => 'site_login',
-//                    ],
-//                    [
-//                        'attribute' => 'site_password',
-//                    ],
-//                    [
-//                        'attribute' => 'site_file_url',
-//                    ],
+                    'ftpGroup' => [
+                        'class' => Group::class,
+                        'label'=>'Настройки FTP',
+                    ],
+                    'ftp_host' => [
+                        'attribute' => 'ftp_host',
+                    ],
+                    'ftp_ssl' => [
+                        'class' => Boolean::class,
+                        'attribute' => 'ftp_ssl',
+                        'defaultValue' => false,
+                    ],
+                    'ftp_port' => [
+                        'attribute' => 'ftp_port',
+                    ],
+                    'ftp_timeout' => [
+                        'attribute' => 'ftp_timeout',
+                    ],
+                    'ftp_login' => [
+                        'attribute' => 'ftp_login',
+                    ],
+                    'ftp_password' => [
+                        'attribute' => 'ftp_password',
+                    ],
+                    'ftp_dir' => [
+                        'attribute' => 'ftp_dir',
+                    ],
+                    'ftp_file_name' => [
+                        'attribute' => 'ftp_file_name',
+                    ],
+                    'siteSettingsGroup' => [
+                        'class' => Group::class,
+                        'label'=>'Настройки Сайта',
+                    ],
+                    'site_host' => [
+                        'attribute' => 'site_host',
+                    ],
+                    'site_auth_url' => [
+                        'attribute' => 'site_auth_url',
+                    ],
+                    'site_auth_method' => [
+                        'attribute' => 'site_auth_method',
+                    ],
+                    'site_login_field' => [
+                        'attribute' => 'site_login_field',
+                    ],
+                    'site_password_field' => [
+                        'attribute' => 'site_password_field',
+                    ],
+                    'site_other_fields' => [
+                        'attribute' => 'site_other_fields',
+                    ],
+                    'site_login' => [
+                        'attribute' => 'site_login',
+                    ],
+                    'site_password' => [
+                        'attribute' => 'site_password',
+                    ],
+                    'site_file_url' => [
+                        'attribute' => 'site_file_url',
+                    ],
+                    'sheetsGroup' => [
+                        'class' => Group::class,
+                        'label' => 'Листы',
+                    ],
+                    'settingsSheets' => [
+                        'class' => HasManyMultipleInput::class,
+                        'attribute' => 'settingsSheets',
+                        'relation' => 'settingsSheets',
+                        'column' => false,
+                    ],
                 ]),
                 'plugins' => \yii::$app->getModule('import')->getSettingsCrudFieldsPlugins(),
             ],
@@ -182,7 +193,7 @@ class Setting extends base\Setting
         ];
     }
 
-    public static function getImportFilesSourcesList() {
+    public static function getFilesSourcesList() {
         return ArrayHelper::map(FilesSource::find()->all(), 'id', 'name');
     }
 
@@ -192,25 +203,17 @@ class Setting extends base\Setting
         }
     }
 
-    public function getSchedulerEvents() {
-        return $this->hasMany(SchedulerEvents::className(), [
-            'id' => 'scheduler_event_id',
-        ])->via('importSettingsVsSchedulerEvents');
-    }
-
-    public function getSettingsVsSchedulerEvents() {
-        return $this->hasMany(ImportSettingsVsSchedulerEvents::className(), [
-            'import_setting_id' => 'id',
-        ]);
-    }
-
     public function delete()
     {
         foreach ($this->importSettingsVsSchedulerEvents as $event) {
             $event->delete();
         }
 
-        foreach ($this->importSettingsSheets as $sheet) {
+        foreach ($this->settingsSheets as $sheet) {
+            $sheet->delete();
+        }
+
+        foreach ($this->files as $sheet) {
             $sheet->delete();
         }
 

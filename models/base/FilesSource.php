@@ -57,16 +57,16 @@ class FilesSource extends ActiveRecord
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getImportFiles()
+    public function getFiles()
     {
-        return $this->hasMany(\execut\import\models\File::className(), ['import_files_source_id' => 'id'])->inverseOf('importFilesSource');
+        return $this->hasMany(\execut\import\models\File::className(), ['import_files_source_id' => 'id'])->inverseOf('filesSource');
     }
 
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getImportSettings()
+    public function getSettings()
     {
-        return $this->hasMany(\execut\import\models\Setting::className(), ['import_files_source_id' => 'id'])->inverseOf('importFilesSource');
+        return $this->hasMany(\execut\import\models\Setting::className(), ['import_files_source_id' => 'id'])->inverseOf('filesSource');
     }
 }

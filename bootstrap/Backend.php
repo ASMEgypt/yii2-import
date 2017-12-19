@@ -62,7 +62,8 @@ class Backend extends BaseBootstrap
      */
     protected function bootstrapNavigation($app)
     {
-        if (!$app->getModule('import')->isHasAccess()) {
+        $importModule = $app->getModule('import');
+        if (!$importModule->isHasAccess()) {
             return;
         }
 
@@ -85,5 +86,7 @@ class Backend extends BaseBootstrap
             'modelName' => Setting::MODEL_NAME,
             'controller' => 'settings',
         ]);
+
+        $importModule->bootstrapNavigation($navigation);
     }
 }

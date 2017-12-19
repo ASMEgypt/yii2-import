@@ -6,6 +6,7 @@
 
 namespace execut\import\controllers;
 
+use execut\actions\action\adapter\EditWithRelations;
 use execut\crud\params\Crud;
 use execut\import\components\WebController;
 use execut\import\models\File;
@@ -23,38 +24,21 @@ class FilesController extends WebController
             'module' => 'import',
             'moduleName' => 'Import',
             'modelName' => File::MODEL_NAME,
+            'relations' => [
+                'logs' => [],
+                'logsFormGroupedByCategory' => [],
+            ],
         ]);
         ini_set('max_execution_time', 0);
         return ArrayHelper::merge($crud->actions(), [
-            'index' => [
-                'class' => Action::className(),
-                'adapter' => [
-                    'view' => [
-                        'widget' => [
-                            'gridOptions' => [
-                                'rowOptions' => function ($row) {
-                                    $classByStatus = [
-                                        File::EVENT_24_HOUR => 'warning',
-                                        File::EVENT_EXPIRED => 'danger',
-                                        File::EVENT_SUCCESS => 'default',
-                                        File::EVENT_WAITING => 'info',
-                                    ];
-                                    return [
-                                        'class' => $classByStatus[$row->eventStatus],
-                                    ];
-                                },
-                            ],
-                        ],
-                    ],
-                ],
-            ],
             'update' => [
                 'adapter' => [
-//                    'editAdapterConfig' => [
-                    'filesAttributes' => [
-                        'content' => 'contentFile'
+                    'class' => EditWithRelations::class,
+                    'editAdapterConfig' => [
+                        'filesAttributes' => [
+                            'content' => 'contentFile'
+                        ],
                     ],
-//                    ],
 //                    'relationAdapterConfig' => [
 //                        'importLogsFormGroupedByCategory' => [
 //                            'view' => [

@@ -10,6 +10,7 @@ namespace execut\import;
 
 
 use execut\import\models\File;
+use execut\navigation\Component;
 
 interface Plugin
 {
@@ -41,4 +42,10 @@ interface Plugin
     public function getAttributesValuesTypesList();
 
     public function getSettingsCrudFieldsPlugins();
+
+    public function getSettingsSheetsCrudFieldsPlugins();
+
+    public function getRequiredAttributesByTypes();
+
+    public function bootstrapNavigation(Component $navigation);
 }

@@ -1,30 +1,108 @@
 <?php
 
 namespace execut\import\models;
+use execut\crudFields\Behavior;
+use execut\crudFields\BehaviorStub;
+use execut\crudFields\fields\DropDown;
+use execut\crudFields\fields\HasManyMultipleInput;
+use execut\crudFields\fields\Hidden;
+use execut\crudFields\fields\NumberField;
+use execut\crudFields\ModelsHelperTrait;
+use lhs\Yii2SaveRelationsBehavior\SaveRelationsBehavior;
+use yii\behaviors\TimestampBehavior;
+use yii\db\Expression;
 use yii\helpers\ArrayHelper;
 
 /**
  * This is the model class for table "import_settings_sets".
- *
- * @property integer $id
- * @property string $created
- * @property string $updated
- * @property string $name
- * @property string $type
- * @property string $import_settings_sheet_id
- *
- * @property \execut\import\models\SettingsSheet $importSettingsSheet
- * @property \execut\import\models\SettingsValue[] $importSettingsValues
  */
 class SettingsSet extends base\SettingsSet
 {
-    public $importSettingsSets = [
-        'importSettingsSets' => [],
-    ];
+    use BehaviorStub, ModelsHelperTrait;
+    public function behaviors()
+    {
+        return [
+            'relationsSaver' => [
+                'class' => SaveRelationsBehavior::class,
+                'relations' => [
+                    'settingsValues'
+                ],
+            ],
+            'fields' => [
+                'class' => Behavior::class,
+                'module' => 'import',
+                'fields' => $this->getStandardFields(['visible', 'name'], [
+                    'import_settings_sheet_id' => [
+                        'class' => Hidden::class,
+                        'attribute' => 'import_settings_sheet_id',
+                    ],
+                    'type' => [
+                        'class' => DropDown::class,
+                        'attribute' => 'type',
+                        'data' => self::getAttributesSetsTypesList(),
+                    ],
+                    'settingsValues' => [
+                        'class' => HasManyMultipleInput::class,
+                        'nameAttribute' => null,
+                        'attribute' => 'settingsValues',
+                        'relation' => 'settingsValues',
+                    ],
+                ]),
+//                'plugins' => \yii::$app->getModule('import')->getSettingsSetsCrudFieldsPlugins(),
+            ],
+            'date' => [
+                'class' => TimestampBehavior::className(),
+                'createdAtAttribute' => 'created',
+                'updatedAtAttribute' => 'updated',
+                'value' => new Expression('NOW()'),
+            ],
+        ];
+    }
+
+    public function validateRequiredFields()
+    {
+        if (!empty($this->type)) {
+            $requiredTypes = $this->getRequiredAttributesByTypes()[$this->type];
+            foreach ($this->settingsValues as $value) {
+                if (!empty($value->type)) {
+                    if (($key = array_search($value->type, $requiredTypes)) !== false) {
+                        unset($requiredTypes[$key]);
+                    }
+                }
+            }
+
+            if (!empty($requiredTypes)) {
+                $labels = \yii::$app->getModule('import')->getAttributesValuesTypesList();
+                $attributes = [];
+                foreach ($requiredTypes as $type) {
+                    $attributes[$type] = $labels[$type];
+                }
+                $this->addError('type', 'Attributes ' . implode(', ', $attributes) . ' is required');
+            }
+        }
+    }
+
+    public function rules()
+    {
+        $rules = $this->getBehavior('fields')->rules();
+
+        return ArrayHelper::merge([
+            [['settingsValues'], 'validateRequiredFields'],
+//            [['type'], 'validateValuesFields'],
+        ], $rules);
+    }
+
+    public function getRequiredAttributesByTypes() {
+        return \yii::$app->getModule('import')->getRequiredAttributesByTypes();
+    }
+
+    public static function getAttributesSetsTypesList() {
+        return \yii::$app->getModule('import')->getAttributesSetsTypesList();
+    }
 
     public function delete()
     {
-        foreach ($this->importSettingsValues as $value) {
+        foreach ($this->settingsValues as $value) {
             $value->delete();
         }
 

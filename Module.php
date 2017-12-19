@@ -10,9 +10,10 @@ namespace execut\import;
 
 use execut\dependencies\PluginBehavior;
 use execut\import\models\File;
+use execut\navigation\Component;
 use kartik\base\TranslationTrait;
 
-class Module extends \yii\base\Module
+class Module extends \yii\base\Module implements Plugin
 {
     public $controllerNamespace = 'execut\import\controllers';
     public function behaviors()
@@ -69,6 +70,24 @@ class Module extends \yii\base\Module
         return $results;
     }
 
+    public function getAttributesSetsTypesList() {
+        $results = $this->getPluginsResults(__FUNCTION__);
+        if ($results === null) {
+            return [];
+        }
+
+        return $results;
+    }
+
+    public function getAttributesValuesTypesList() {
+        $results = $this->getPluginsResults(__FUNCTION__);
+        if ($results === null) {
+            return [];
+        }
+
+        return $results;
+    }
+
     public function getSettingsCrudFieldsPlugins() {
         $results = $this->getPluginsResults(__FUNCTION__);
         if ($results === null) {
@@ -76,5 +95,27 @@ class Module extends \yii\base\Module
         }
 
         return $results;
+    }
+
+    public function getSettingsSheetsCrudFieldsPlugins() {
+        $results = $this->getPluginsResults(__FUNCTION__);
+        if ($results === null) {
+            return [];
+        }
+
+        return $results;
+    }
+
+    public function getRequiredAttributesByTypes() {
+        $results = $this->getPluginsResults(__FUNCTION__);
+        if ($results === null) {
+            return [];
+        }
+
+        return $results;
+    }
+
+    public function bootstrapNavigation(Component $navigation) {
+        $this->getPluginsResults(__FUNCTION__, false, [$navigation]);
     }
 }

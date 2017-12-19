@@ -5,14 +5,14 @@
  * Time: 14:55
  */
 
-namespace execut\import\models\forms;
+namespace execut\import\models;
 
 
 use execut\yii\base\Model;
 use yii\data\ActiveDataProvider;
 use yii\db\ActiveQuery;
 
-class Dictionaries extends Model
+class Dictionary extends Model
 {
     public $type = null;
     public $name = null;
@@ -37,7 +37,7 @@ class Dictionaries extends Model
     }
 
     public function search() {
-        $types = ImportSettingsSheets::getDictionaries();
+        $types = SettingsSheet::getDictionaries();
         $type = explode('.', $this->type)[0];
         /**
          * @var ActiveQuery $query
@@ -57,9 +57,11 @@ class Dictionaries extends Model
             ]);
         }
 
-        return new ActiveDataProvider([
+        $dp = new ActiveDataProvider([
             'query' => $query,
         ]);
+
+        return $dp;
     }
 
     public function formName()

@@ -16,8 +16,8 @@ use yii\helpers\ArrayHelper;
  * @property string $type
  * @property string $import_settings_sheet_id
  *
- * @property \execut\import\models\SettingsSheet $importSettingsSheet
- * @property \execut\import\models\SettingsValue[] $importSettingsValues
+ * @property \execut\import\models\SettingsSheet $settingsSheet
+ * @property \execut\import\models\SettingsValue[] $settingsValues
  */
 class SettingsSet extends ActiveRecord
 {
@@ -29,19 +29,19 @@ class SettingsSet extends ActiveRecord
         return 'import_settings_sets';
     }
 
-    /**
-     * @inheritdoc
-     */
-    public function rules()
-    {
-        return ArrayHelper::merge(parent::rules(), [
-            [['created', 'updated'], 'safe'],
-            [['type', 'import_settings_sheet_id'], 'required'],
-            [['import_settings_sheet_id'], 'integer'],
-            [['type'], 'string', 'max' => 255],
-            [['import_settings_sheet_id'], 'exist', 'skipOnError' => true, 'targetClass' => SettingsSheet::className(), 'targetAttribute' => ['import_settings_sheet_id' => 'id']],
-        ]);
-    }
+//    /**
+//     * @inheritdoc
+//     */
+//    public function rules()
+//    {
+//        return ArrayHelper::merge(parent::rules(), [
+//            [['created', 'updated'], 'safe'],
+//            [['type', 'import_settings_sheet_id'], 'required'],
+//            [['import_settings_sheet_id'], 'integer'],
+//            [['type'], 'string', 'max' => 255],
+//            [['import_settings_sheet_id'], 'exist', 'skipOnError' => true, 'targetClass' => SettingsSheet::className(), 'targetAttribute' => ['import_settings_sheet_id' => 'id']],
+//        ]);
+//    }
 
     /**
      * @inheritdoc
@@ -60,16 +60,16 @@ class SettingsSet extends ActiveRecord
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getImportSettingsSheet()
+    public function getSettingsSheet()
     {
-        return $this->hasOne(\execut\import\models\SettingsSheet::className(), ['id' => 'import_settings_sheet_id'])->inverseOf('importSettingsSets');
+        return $this->hasOne(\execut\import\models\SettingsSheet::className(), ['id' => 'import_settings_sheet_id'])->inverseOf('settingsSets');
     }
 
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getImportSettingsValues()
+    public function getSettingsValues()
     {
-        return $this->hasMany(\execut\import\models\SettingsValue::className(), ['import_settings_set_id' => 'id'])->inverseOf('importSettingsSet');
+        return $this->hasMany(\execut\import\models\SettingsValue::className(), ['import_settings_set_id' => 'id'])->inverseOf('settingsSet');
     }
 }
