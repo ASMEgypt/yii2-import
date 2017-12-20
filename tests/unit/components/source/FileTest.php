@@ -8,7 +8,7 @@
 
 namespace execut\import\components\source;
 
-use execut\TestCase;
+use execut\import\tests\TestCase;
 
 class FileTest extends TestCase
 {

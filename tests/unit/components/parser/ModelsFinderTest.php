@@ -15,7 +15,8 @@ use execut\import\components\parser\exception\NotFoundRecord;
 use execut\import\components\parser\ModelsFinder;
 use execut\import\components\parser\Result;
 use execut\import\components\parser\Stack;
-use execut\TestCase;
+use execut\import\Query;
+use execut\import\tests\TestCase;
 use yii\db\ActiveRecord;
 
 class ModelsFinderTest extends TestCase
@@ -125,7 +126,7 @@ class ModelsFinderTest extends TestCase
     }
 }
 
-class ParserTestModel extends ActiveRecord {
+class ParserTestModel extends ActiveRecord implements Query {
     public $modelClass;
     public static function find() {
         $result = new self;
@@ -146,7 +147,7 @@ class ParserTestModel extends ActiveRecord {
     public $errors;
     public $count = 1;
     public $orderBy = null;
-    public function byAttributesScopes($attributes) {
+    public function byImportAttributes($attributes) {
         if (isset($attributes['moreThenOneAttribute'])) {
             $this->count = 2;
         }
@@ -157,12 +158,14 @@ class ParserTestModel extends ActiveRecord {
         return $this;
     }
 
-    public function count() {
-        return $this->count;
-    }
-
-    public function one() {
-        return $this;
+    public function all() {
+        if ($this->count == 2) {
+            return [$this, $this];
+        } else if ($this->count == 0) {
+            return [];
+        } else {
+            return [$this];
+        }
     }
 
     public function validate($attributeNames = null, $clearErrors = true)

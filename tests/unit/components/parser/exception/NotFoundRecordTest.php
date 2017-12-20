@@ -7,9 +7,8 @@
 
 namespace execut\import\components\parser\exception;
 
-
-use execut\TestCase;
-use execut\yii\db\ActiveRecord;
+use execut\import\tests\TestCase;
+use yii\db\ActiveRecord;
 
 class NotFoundRecordTest extends TestCase
 {

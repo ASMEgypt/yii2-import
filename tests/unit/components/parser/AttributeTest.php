@@ -9,7 +9,7 @@ namespace execut\import\components\parser;
 
 
 use execut\import\components\parser\exception\ColumnIsEmpty;
-use execut\TestCase;
+use execut\import\tests\TestCase;
 
 class AttributeTest extends TestCase
 {

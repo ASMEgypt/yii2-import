@@ -8,8 +8,7 @@
 namespace execut\import\components\parser\exception;
 
 
-use execut\TestCase;
-use execut\yii\db\ActiveRecord;
+use execut\import\tests\TestCase;
 
 class ValidateTest extends TestCase
 {

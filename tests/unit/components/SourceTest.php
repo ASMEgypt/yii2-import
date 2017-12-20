@@ -10,7 +10,7 @@ namespace execut\import\components;
 
 
 use execut\import\components\source\Adapter;
-use execut\TestCase;
+use execut\import\tests\TestCase;
 
 class SourceTest extends TestCase
 {

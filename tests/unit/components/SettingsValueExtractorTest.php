@@ -9,7 +9,7 @@ namespace execut\import\components;
 
 
 use execut\import\models\SettingsValue;
-use execut\TestCase;
+use execut\import\tests\TestCase;
 
 class SettingsValueExtractorTest extends TestCase
 {

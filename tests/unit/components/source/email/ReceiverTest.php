@@ -10,8 +10,8 @@ namespace execut\import\components\source\adapter\email;
 
 
 use Ddeboer\Imap\Message\Attachment;
-use execut\TestCase;
 use execut\actions\action\adapter\File;
+use execut\import\tests\TestCase;
 use roopz\imap\Imap;
 use roopz\imap\IncomingMail;
 use roopz\imap\IncomingMailAttachment;

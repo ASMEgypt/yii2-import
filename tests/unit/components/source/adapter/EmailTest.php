@@ -9,13 +9,10 @@
 namespace execut\import\components\source\adapter;
 
 
-use execut\import\components\source\adapter\Email;
-use execut\import\components\source\adapter\email\Filter;
 use execut\import\components\source\adapter\email\Mail;
 use execut\import\components\source\adapter\email\Receiver;
-use execut\TestCase;
 use execut\actions\action\adapter\File;
-use roopz\imap\Imap;
+use execut\import\tests\TestCase;
 
 class EmailTest extends TestCase
 {

@@ -9,7 +9,7 @@
 namespace execut\import\components\source\adapter;
 
 
-use execut\TestCase;
+use execut\import\tests\TestCase;
 use GuzzleHttp\Client;
 use GuzzleHttp\Psr7\Response;
 

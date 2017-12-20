@@ -26,73 +26,7 @@ class ModelsFinder extends Component
     public $prepareQuery = null;
     public $asArray = false;
     public $stack = null;
-
-    public function find() {
-        $attributesValues = $this->getAttributesValues();
-        $cacheKey = $this->query->modelClass . ' ' . Json::encode($attributesValues);
-        if (isset(self::$cache[$cacheKey])) {
-            return self::$cache[$cacheKey];
-        }
-
-        if (count(self::$cache) > 10000) {
-            echo 'clean(' . count(self::$cache) . ')';
-            self::$cache = array_splice(self::$cache, -3000);
-        }
-
-        $q = $this->query;
-        $q = clone $q;
-        $modelClass = $q->modelClass;
-        if ($this->isCreateAlways) {
-            $result = new $modelClass;
-        } else {
-            $attributeForSearch = $this->getAttributesForSearch();
-            $q->byAttributesScopes($attributeForSearch);
-
-            $qForCount = clone $q;
-            $qForCount->orderBy = null;
-            $count = $qForCount->count();
-            if ($count > 1) {
-                $exception = new MoreThanOne();
-                $exception->modelClass = $modelClass;
-                $exception->attributes = $attributesValues;
-
-                throw $exception;
-            }
-
-            if ($count) {
-                if ($this->prepareQuery !== null) {
-                    $callback = $this->prepareQuery;
-                    $q = $callback($q);
-                }
-
-                $result = $q->one();
-                if ($this->isUpdateAlways) {
-                    $result->attributes = $attributesValues;
-                }
-
-                if ($this->asArray) {
-                    $result = [$result];
-                }
-
-                return self::$cache[$cacheKey] = $result;
-            } else if ($this->isCreateNotExisted) {
-                $result = new $modelClass;
-            } else {
-                $exception = new NotFoundRecord();
-                $exception->modelClass = $modelClass;
-                $exception->attributes = $attributesValues;
-
-                throw $exception;
-            }
-        }
-
-        $result->attributes = $attributesValues;
-        if ($this->asArray) {
-            $result = [$result];
-        }
-
-        return self::$cache[$cacheKey] = $result;
-    }
+    public $advancedSearch = null;
 
     public function findModel() {
         $attributesValues = $this->getAttributesValues();
@@ -121,10 +55,19 @@ class ModelsFinder extends Component
                 $q->andWhere($attributeForSearch);
             }
 
-            $qForCount = clone $q;
-            $qForCount->orderBy = null;
-            $count = $qForCount->count();
-            if ($count > 1) {
+            if ($this->prepareQuery !== null) {
+                $callback = $this->prepareQuery;
+                $q = $callback($q, $result, $this->stack);
+            }
+
+            if ($this->advancedSearch !== null) {
+                $callback = $this->advancedSearch;
+                $models = $callback($q, $result, $this->stack);
+            } else {
+                $models = $q->all();
+            }
+
+            if (count($models) > 1) {
                 $exception = new MoreThanOne();
                 $exception->modelClass = $modelClass;
                 $exception->attributes = $attributesValues;
@@ -132,13 +75,8 @@ class ModelsFinder extends Component
                 throw $exception;
             }
 
-            if ($count) {
-                if ($this->prepareQuery !== null) {
-                    $callback = $this->prepareQuery;
-                    $q = $callback($q, $result, $this->stack);
-                }
-
-                $model = $q->one();
+            if (count($models) == 1) {
+                $model = current($models);
                 if ($this->isUpdateAlways) {
                     $model->attributes = $attributesValues;
                 }

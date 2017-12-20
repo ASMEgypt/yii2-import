@@ -10,7 +10,7 @@ namespace execut\import\components\source\adapter;
 
 
 use execut\import\components\source\adapter\Ftp;
-use execut\TestCase;
+use execut\import\tests\TestCase;
 use yii2mod\ftp\FtpClient;
 
 class FtpTest extends TestCase

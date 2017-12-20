@@ -7,11 +7,7 @@
 
 namespace execut\import\components;
 
-
-use execut\TestCase;
-use yii\base\Exception;
-use yii\caching\Cache;
-use yii\caching\FileCache;
+use execut\import\tests\TestCase;
 
 class ToArrayConverterTest extends TestCase
 {

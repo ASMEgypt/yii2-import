@@ -9,7 +9,7 @@
 namespace execut\import\components\parser;
 
 
-use execut\TestCase;
+use execut\import\tests\TestCase;
 
 class ResultTest extends TestCase
 {

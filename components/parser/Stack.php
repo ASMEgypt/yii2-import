@@ -18,6 +18,7 @@ class Stack extends Component
      */
     protected $parsers = [];
     public $relations = [];
+    public $stacks = [];
     public function setParsers($parsers) {
         foreach ($parsers as $key => $parser) {
             if (is_array($parser)) {

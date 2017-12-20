@@ -14,8 +14,8 @@ use execut\import\components\parser\exception\Validate;
 use execut\import\components\parser\ModelsFinder;
 use execut\import\components\parser\Result;
 use execut\import\components\parser\Stack;
-use execut\TestCase;
-use execut\yii\db\ActiveRecord;
+use execut\import\tests\TestCase;
+use yii\db\ActiveRecord;
 
 class ParserTest extends TestCase
 {

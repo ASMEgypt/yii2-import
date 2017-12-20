@@ -11,8 +11,8 @@ namespace execut\import\tests\unit\components\parser;
 use execut\import\components\Parser;
 use execut\import\components\parser\Result;
 use execut\import\components\parser\Stack;
-use execut\TestCase;
-use execut\yii\db\ActiveRecord;
+use execut\import\tests\TestCase;
+use yii\db\ActiveRecord;
 
 class StackTest extends TestCase
 {

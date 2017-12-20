@@ -9,7 +9,7 @@
 namespace execut\import\components\source\adapter\email;
 
 use execut\import\components\source\File;
-use execut\TestCase;
+use execut\import\tests\TestCase;
 
 class FilterTest extends TestCase
 {

@@ -8,7 +8,7 @@
 namespace execut\import\components\parser\exception;
 
 
-use execut\TestCase;
+use execut\import\tests\TestCase;
 
 class ColumnIsEmptyTest extends TestCase
 {
