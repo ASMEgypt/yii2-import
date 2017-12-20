@@ -40,20 +40,6 @@ class FilesStatuse extends ActiveRecord
     }
 
     /**
-     * @inheritdoc
-     */
-    public function attributeLabels()
-    {
-        return ArrayHelper::merge(parent::attributeLabels(), [
-            'id' => Yii::t('execut.import.models.base.FilesStatuse', 'ID'),
-            'created' => Yii::t('execut.import.models.base.FilesStatuse', 'Created'),
-            'updated' => Yii::t('execut.import.models.base.FilesStatuse', 'Updated'),
-            'name' => Yii::t('execut.import.models.base.FilesStatuse', 'Name'),
-            'key' => Yii::t('execut.import.models.base.FilesStatuse', 'Key'),
-        ]);
-    }
-
-    /**
      * @return \yii\db\ActiveQuery
      */
     public function getFiles()

@@ -8,15 +8,15 @@ namespace execut\import\controllers;
 
 use execut\actions\action\adapter\EditWithRelations;
 use execut\crud\params\Crud;
-use execut\import\components\WebController;
+
 use execut\import\models\File;
 use execut\actions\Action;
 use execut\actions\action\adapter\File as FileAdapter;
 use yii\helpers\ArrayHelper;
+use yii\web\Controller;
 
-class FilesController extends WebController
+class FilesController extends Controller
 {
-    protected $_roles = ['import_manager'];
     public function actions()
     {
         $crud = new Crud([
@@ -26,7 +26,7 @@ class FilesController extends WebController
             'modelName' => File::MODEL_NAME,
             'relations' => [
                 'logs' => [],
-                'logsFormGroupedByCategory' => [],
+                'logsGrouped' => [],
             ],
         ]);
         ini_set('max_execution_time', 0);

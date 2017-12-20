@@ -49,32 +49,32 @@ class m160713_140416_addImportFilesTable extends \execut\yii\migration\Migration
         ], [
             [
                 'id' => 1,
-                'name' => 'Новый',
+                'name' => 'New',
                 'key' => 'new',
             ],
             [
                 'id' => 2,
-                'name' => 'Перезагрузить',
+                'name' => 'Reload',
                 'key' => 'reload',
             ],
             [
                 'id' => 3,
-                'name' => 'Удалить',
+                'name' => 'Delete',
                 'key' => 'delete',
             ],
             [
                 'id' => 4,
-                'name' => 'Загружен',
+                'name' => 'Loaded',
                 'key' => 'loaded',
             ],
             [
                 'id' => 5,
-                'name' => 'Загрузка',
+                'name' => 'Loading',
                 'key' => 'loading',
             ],
             [
                 'id' => 6,
-                'name' => 'Удаление',
+                'name' => 'Deleting',
                 'key' => 'deleting',
             ]
         ]);

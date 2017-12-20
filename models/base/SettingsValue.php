@@ -48,25 +48,6 @@ class SettingsValue extends ActiveRecord
 //    }
 
     /**
-     * @inheritdoc
-     */
-    public function attributeLabels()
-    {
-        return ArrayHelper::merge(parent::attributeLabels(), [
-            'id' => Yii::t('execut.import.models.base.SettingsValue', 'ID'),
-            'created' => Yii::t('execut.import.models.base.SettingsValue', 'Created'),
-            'updated' => Yii::t('execut.import.models.base.SettingsValue', 'Updated'),
-            'type' => Yii::t('execut.import.models.base.SettingsValue', 'Type'),
-            'column_nbr' => Yii::t('execut.import.models.base.SettingsValue', 'Column Nbr'),
-            'format' => Yii::t('execut.import.models.base.SettingsValue', 'Format'),
-            'value_string' => Yii::t('execut.import.models.base.SettingsValue', 'Value String'),
-            'value_option' => Yii::t('execut.import.models.base.SettingsValue', 'Value Option'),
-            'import_settings_set_id' => Yii::t('execut.import.models.base.SettingsValue', 'Import Settings Set ID'),
-            'number_delimiter' => Yii::t('execut.import.models.base.SettingsValue', 'Number Delimiter'),
-        ]);
-    }
-
-    /**
      * @return \yii\db\ActiveQuery
      */
     public function getLogs()

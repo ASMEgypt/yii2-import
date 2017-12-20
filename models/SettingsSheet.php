@@ -1,21 +1,18 @@
 <?php
 
 namespace execut\import\models;
-use execut\CacheTrait;
 use execut\crudFields\Behavior;
 use execut\crudFields\BehaviorStub;
 use execut\crudFields\fields\HasManyMultipleInput;
 use execut\crudFields\fields\Hidden;
 use execut\crudFields\fields\NumberField;
 use execut\crudFields\ModelsHelperTrait;
-use execut\import\components\parser\Stack;
 use execut\import\components\Saver;
 use execut\import\components\SettingsValueExtractor;
-use execut\yii\helpers\ArrayHelper;
 use lhs\Yii2SaveRelationsBehavior\SaveRelationsBehavior;
-use yii\base\Exception;
 use yii\behaviors\TimestampBehavior;
 use yii\db\Expression;
+use yii\helpers\ArrayHelper;
 
 /**
  * This is the model class for table "import_settings_sheets".
@@ -32,7 +29,8 @@ use yii\db\Expression;
  */
 class SettingsSheet extends base\SettingsSheet
 {
-    use CacheTrait, BehaviorStub, ModelsHelperTrait;
+    use BehaviorStub, ModelsHelperTrait;
+    protected static $settingsByIds = [];
     public function behaviors()
     {
         return [
@@ -83,29 +81,29 @@ class SettingsSheet extends base\SettingsSheet
     }
 
     public function getSettings() {
-        return self::_cacheStatic(function () {
-            $settings = [];
-            $extractor = new SettingsValueExtractor();
-            $typesSettings = self::getParsersByTypesSettings();
-            $saver = new Saver();
-            foreach ($this->settingsSets as $set) {
-                $typeSettings = [];
-                foreach ($set->importSettingsValues as $value) {
-                    $extractor->model = $value;
-                    $typeSettings = ArrayHelper::merge($typeSettings, $extractor->extract());
-                }
+        if (!empty(self::$settingsByIds[$this->id])) {
+            return self::$settingsByIds[$this->id];
+        }
 
-                foreach ($typeSettings as $typeSetting) {
-                    $typeSetting['parser'] = $saver;
-                }
-
-                $settings[] = ArrayHelper::merge($typesSettings[$set->type], [
-                    'parsers' => $typeSettings,
-                ]);
+        $settings = [];
+        $extractor = new SettingsValueExtractor();
+        $typesSettings = self::getParsersByTypesSettings();
+        $saver = new Saver();
+        foreach ($this->settingsSets as $set) {
+            $typeSettings = [];
+            foreach ($set->settingsValues as $value) {
+                $extractor->model = $value;
+                $typeSettings = ArrayHelper::merge($typeSettings, $extractor->extract());
             }
 
-            return $settings;
-        }, 'settings' . $this->id);
+            $settings[] = ArrayHelper::merge($typesSettings[$set->type], [
+                'parsers' => $typeSettings,
+            ]);
+        }
+
+        self::$settingsByIds[$this->id] = $settings;
+
+        return $settings;
     }
 
     public function delete()

@@ -41,20 +41,6 @@ class FilesSource extends ActiveRecord
     }
 
     /**
-     * @inheritdoc
-     */
-    public function attributeLabels()
-    {
-        return ArrayHelper::merge(parent::attributeLabels(), [
-            'id' => Yii::t('execut.import.models.base.FilesSource', 'ID'),
-            'created' => Yii::t('execut.import.models.base.FilesSource', 'Created'),
-            'updated' => Yii::t('execut.import.models.base.FilesSource', 'Updated'),
-            'name' => Yii::t('execut.import.models.base.FilesSource', 'Name'),
-            'key' => Yii::t('execut.import.models.base.FilesSource', 'Key'),
-        ]);
-    }
-
-    /**
      * @return \yii\db\ActiveQuery
      */
     public function getFiles()

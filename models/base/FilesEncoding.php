@@ -40,20 +40,6 @@ class FilesEncoding extends ActiveRecord
     }
 
     /**
-     * @inheritdoc
-     */
-    public function attributeLabels()
-    {
-        return ArrayHelper::merge(parent::attributeLabels(), [
-            'id' => Yii::t('execut.import.models.base.FilesEncoding', 'ID'),
-            'created' => Yii::t('execut.import.models.base.FilesEncoding', 'Created'),
-            'updated' => Yii::t('execut.import.models.base.FilesEncoding', 'Updated'),
-            'name' => Yii::t('execut.import.models.base.FilesEncoding', 'Name'),
-            'key' => Yii::t('execut.import.models.base.FilesEncoding', 'Key'),
-        ]);
-    }
-
-    /**
      * @return \yii\db\ActiveQuery
      */
     public function getSettings()

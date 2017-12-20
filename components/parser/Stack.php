@@ -13,6 +13,9 @@ use yii\base\Component;
 
 class Stack extends Component
 {
+    /**
+     * @var Parser[]
+     */
     protected $parsers = [];
     public $relations = [];
     public function setParsers($parsers) {

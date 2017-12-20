@@ -49,7 +49,10 @@ class Parser extends Component
      */
     public function getModelsFinder() {
         if (is_array($this->modelsFinder)) {
-            $this->modelsFinder['class'] = ModelsFinder::className();
+            if (empty($this->modelsFinder['class'])) {
+                $this->modelsFinder['class'] = ModelsFinder::className();
+            }
+
             $this->modelsFinder = \yii::createObject($this->modelsFinder);
         }
 

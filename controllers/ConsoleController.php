@@ -22,6 +22,8 @@ use yii\mutex\Mutex;
 class ConsoleController extends Controller
 {
     public $loadsLimit = 20;
+    public $checkedFileStatusRows = 1000;
+    protected $lastCheckedRow = 0;
     public function actionIndex($id = null) {
         ini_set('memory_limit', -1);
         $this->clearOldFiles();
@@ -139,12 +141,7 @@ class ConsoleController extends Controller
             'threadsCount' => 1,
             'callback' => function ($row, $rowKey) use ($stacksSettings, $file) {
                 try {
-                    $stacks = [];
-                    foreach ($stacksSettings as $key => $stacksSetting) {
-                        $stacks[] = new Stack($stacksSetting);
-                    }
-
-                    foreach ($stacks as $stack) {
+                    if ($this->lastCheckedRow >= $this->checkedFileStatusRows) {
                         if ($file->isStop()) {
                             $file->triggerStop();
                             return;
@@ -155,6 +152,20 @@ class ConsoleController extends Controller
                             return;
                         }
 
+                        $this->lastCheckedRow = 0;
+                    } else {
+                        $this->lastCheckedRow++;
+                    }
+
+                    /**
+                     * @var Stack[] $stacks
+                     */
+                    $stacks = [];
+                    foreach ($stacksSettings as $key => $stacksSetting) {
+                        $stacks[] = new Stack($stacksSetting);
+                    }
+
+                    foreach ($stacks as $stack) {
                         $stack->setRow($row);
                         $result = $stack->parse();
                         $file->triggerSuccessRow();
@@ -165,7 +176,7 @@ class ConsoleController extends Controller
                         'category' => $e->getLogCategory(),
                         'message' => $e->getLogMessage(),
                         'import_file_id' => $file->id,
-                        'row_nbr' => $rowKey + $file->importSetting->ignored_lines + 1,
+                        'row_nbr' => $rowKey + $file->setting->ignored_lines + 1,
                         'column_nbr' => $e->columnNbr
                     ];
                     $this->logError($attributes);
@@ -176,7 +187,7 @@ class ConsoleController extends Controller
                         'category' => 'import.error',
                         'message' => $e->getMessage() . "\n" . $e->getTraceAsString(),
                         'import_file_id' => $file->id,
-                        'row_nbr' => $rowKey + $file->importSetting->ignored_lines + 1,
+                        'row_nbr' => $rowKey + $file->setting->ignored_lines + 1,
                     ];
                     $this->logError($attributes);
 

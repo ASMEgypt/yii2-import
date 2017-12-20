@@ -31,7 +31,7 @@ use yii\helpers\ArrayHelper;
  * @property \execut\import\models\FilesStatuse $importFilesStatuse
  * @property \execut\import\models\Setting $importSetting
  * @property \execut\import\models\User $use
- * @property \execut\import\models\Log[] $importLogs
+ * @property \execut\import\models\Log[] logs
  */
 class File extends ActiveRecord
 {
@@ -59,32 +59,6 @@ class File extends ActiveRecord
             [['import_files_statuse_id'], 'exist', 'skipOnError' => true, 'targetClass' => FilesStatuse::className(), 'targetAttribute' => ['import_files_statuse_id' => 'id']],
             [['import_setting_id'], 'exist', 'skipOnError' => true, 'targetClass' => Setting::className(), 'targetAttribute' => ['import_setting_id' => 'id']],
             [['use_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::className(), 'targetAttribute' => ['use_id' => 'id']],
-        ]);
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function attributeLabels()
-    {
-        return ArrayHelper::merge(parent::attributeLabels(), [
-            'id' => Yii::t('execut.import.models.base.File', 'ID'),
-            'created' => Yii::t('execut.import.models.base.File', 'Created'),
-            'updated' => Yii::t('execut.import.models.base.File', 'Updated'),
-            'name' => Yii::t('execut.import.models.base.File', 'Name'),
-            'extension' => Yii::t('execut.import.models.base.File', 'Extension'),
-            'mime_type' => Yii::t('execut.import.models.base.File', 'Mime Type'),
-            'content' => Yii::t('execut.import.models.base.File', 'Content'),
-            'md5' => Yii::t('execut.import.models.base.File', 'Md5'),
-            'import_files_source_id' => Yii::t('execut.import.models.base.File', 'Import Files Source ID'),
-            'use_id' => Yii::t('execut.import.models.base.File', 'Use ID'),
-            'import_files_statuse_id' => Yii::t('execut.import.models.base.File', 'Import Files Statuse ID'),
-            'import_setting_id' => Yii::t('execut.import.models.base.File', 'Import Setting ID'),
-            'rows_count' => Yii::t('execut.import.models.base.File', 'Rows Count'),
-            'rows_errors' => Yii::t('execut.import.models.base.File', 'Rows Errors'),
-            'rows_success' => Yii::t('execut.import.models.base.File', 'Rows Success'),
-            'start_date' => Yii::t('execut.import.models.base.File', 'Start Date'),
-            'end_date' => Yii::t('execut.import.models.base.File', 'End Date'),
         ]);
     }
 

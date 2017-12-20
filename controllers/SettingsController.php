@@ -10,13 +10,12 @@ namespace execut\import\controllers;
 use execut\actions\Action;
 use execut\actions\action\adapter\GridView;
 use execut\crud\params\Crud;
-use execut\import\components\WebController;
 use execut\import\models\Dictionary;
 use execut\import\models\Setting;
-use execut\navigation\behaviors\Navigation;
 use yii\helpers\ArrayHelper;
+use yii\web\Controller;
 
-class SettingsController extends WebController
+class SettingsController extends Controller
 {
     public function actions()
     {

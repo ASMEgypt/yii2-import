@@ -44,21 +44,6 @@ class SettingsSheet extends ActiveRecord
 //    }
 
     /**
-     * @inheritdoc
-     */
-    public function attributeLabels()
-    {
-        return ArrayHelper::merge(parent::attributeLabels(), [
-            'id' => Yii::t('execut.import.models.base.SettingsSheet', 'ID'),
-            'created' => Yii::t('execut.import.models.base.SettingsSheet', 'Created'),
-            'updated' => Yii::t('execut.import.models.base.SettingsSheet', 'Updated'),
-            'name' => Yii::t('execut.import.models.base.SettingsSheet', 'Name'),
-            'order' => Yii::t('execut.import.models.base.SettingsSheet', 'Order'),
-            'import_setting_id' => Yii::t('execut.import.models.base.SettingsSheet', 'Import Setting ID'),
-        ]);
-    }
-
-    /**
      * @return \yii\db\ActiveQuery
      */
     public function getSettingsSets()

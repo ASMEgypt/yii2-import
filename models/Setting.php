@@ -77,6 +77,12 @@ class Setting extends base\Setting
                         'class' => Boolean::class,
                         'attribute' => 'is_check_mime_type',
                     ],
+                    'import_files_source_id' => [
+                        'class' => DropDown::class,
+                        'attribute' => 'import_files_source_id',
+                        'relation' => 'filesSource',
+                        'required' => true,
+                    ],
                     'csvGroup' => [
                         'class' => Group::class,
                         'label'=>'Настройки Csv',
@@ -86,12 +92,6 @@ class Setting extends base\Setting
                     ],
                     'csv_enclosure' => [
                         'attribute' => 'csv_enclosure',
-                    ],
-                    'import_files_source_id' => [
-                        'class' => DropDown::class,
-                        'attribute' => 'import_files_source_id',
-                        'relation' => 'filesSource',
-                        'required' => true,
                     ],
                     'emailGroup' => [
                         'class' => Group::class,

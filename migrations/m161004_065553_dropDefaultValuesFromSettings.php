@@ -9,9 +9,9 @@ class m161004_065553_dropDefaultValuesFromSettings extends \execut\yii\migration
             ->alterColumnDropNotNull('ftp_port')
             ->alterColumnDropDefault('ftp_timeout', 60)
             ->alterColumnDropNotNull('ftp_timeout')
-            ->alterColumnDropDefault('site_auth_url', '/')
+            ->alterColumnDropDefault('site_auth_url', '\'/\'')
             ->alterColumnDropNotNull('site_auth_url')
-            ->alterColumnDropDefault('site_auth_method', 'post')
+            ->alterColumnDropDefault('site_auth_method', '\'post\'')
             ->alterColumnDropNotNull('site_auth_method')
         ;
     }

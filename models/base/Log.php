@@ -52,32 +52,11 @@ class Log extends ActiveRecord
     }
 
     /**
-     * @inheritdoc
-     */
-    public function attributeLabels()
-    {
-        return ArrayHelper::merge(parent::attributeLabels(), [
-            'id' => Yii::t('execut.import.models.base.Log', 'ID'),
-            'created' => Yii::t('execut.import.models.base.Log', 'Created'),
-            'updated' => Yii::t('execut.import.models.base.Log', 'Updated'),
-            'level' => Yii::t('execut.import.models.base.Log', 'Level'),
-            'category' => Yii::t('execut.import.models.base.Log', 'Category'),
-            'prefix' => Yii::t('execut.import.models.base.Log', 'Prefix'),
-            'message' => Yii::t('execut.import.models.base.Log', 'Message'),
-            'row_nbr' => Yii::t('execut.import.models.base.Log', 'Row Nbr'),
-            'column_nbr' => Yii::t('execut.import.models.base.Log', 'Column Nbr'),
-            'value' => Yii::t('execut.import.models.base.Log', 'Value'),
-            'import_file_id' => Yii::t('execut.import.models.base.Log', 'Import File ID'),
-            'import_settings_value_id' => Yii::t('execut.import.models.base.Log', 'Import Settings Value ID'),
-        ]);
-    }
-
-    /**
      * @return \yii\db\ActiveQuery
      */
-    public function getImportFile()
+    public function getFile()
     {
-        return $this->hasOne(\execut\import\models\File::className(), ['id' => 'import_file_id'])->inverseOf('importLogs');
+        return $this->hasOne(\execut\import\models\File::className(), ['id' => 'import_file_id'])->inverseOf('logs');
     }
 
     /**
@@ -85,6 +64,6 @@ class Log extends ActiveRecord
      */
     public function getSettingsValue()
     {
-        return $this->hasOne(\execut\import\models\SettingsValue::className(), ['id' => 'import_settings_value_id'])->inverseOf('importLogs');
+        return $this->hasOne(\execut\import\models\SettingsValue::className(), ['id' => 'import_settings_value_id'])->inverseOf('logs');
     }
 }

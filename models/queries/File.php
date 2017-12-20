@@ -115,4 +115,16 @@ class File extends ActiveQuery
 
         return $this;
     }
+
+    public function byImportSettingId($id) {
+        return $this->andWhere([
+            'import_setting_id' => $id,
+        ]);
+    }
+
+    public function byId($id) {
+        return $this->andWhere([
+            'id' => $id,
+        ]);
+    }
 }

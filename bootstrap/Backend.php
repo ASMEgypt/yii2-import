@@ -13,28 +13,33 @@ use execut\import\models\File;
 use execut\import\models\Setting;
 use execut\import\Module;
 use execut\navigation\Component;
-use execut\yii\Bootstrap as BaseBootstrap;
+use execut\navigation\configurator\HomePage;
+use yii\helpers\ArrayHelper;
 use yii\i18n\PhpMessageSource;
 
-class Backend extends BaseBootstrap
+class Backend extends Common
 {
-    protected $_defaultDepends = [
-        'modules' => [
-            'import' => [
-                'class' => Module::class,
+    public function getDefaultDepends()
+    {
+        return ArrayHelper::merge(parent::getDefaultDepends(), [
+            'components' => [
+                'navigation' => [
+                    'class' => Component::class,
+                ],
             ],
-        ],
-        'components' => [
-            'navigation' => [
-                'class' => Component::class,
+            'bootstrap' => [
+                'navigation' => [
+                    'class' => \execut\navigation\Bootstrap::class,
+                ],
+                'actions' => [
+                    'class' => Bootstrap::class,
+                ],
+                'crud' => [
+                    'class' => \execut\crud\Bootstrap::class,
+                ],
             ],
-        ],
-        'bootstrap' => [
-            'actions' => [
-                'class' => Bootstrap::class,
-            ],
-        ],
-    ];
+        ]);
+    }
 
     /**
      * @param \yii\base\Application $app
@@ -43,18 +48,6 @@ class Backend extends BaseBootstrap
     {
         parent::bootstrap($app);
         $this->bootstrapNavigation($app);
-        $this->initI18n();
-    }
-
-    public function initI18n() {
-        \yii::$app->i18n->translations['execut/import'] = [
-            'class' => PhpMessageSource::class,
-            'sourceLanguage' => 'en-US',
-            'basePath' => '@vendor/execut/yii2-import/messages',
-            'fileMap' => [
-                'execut/import' => 'import.php',
-            ],
-        ];
     }
 
     /**
@@ -71,6 +64,10 @@ class Backend extends BaseBootstrap
          * @var Component $navigation
          */
         $navigation = $app->navigation;
+        $navigation->addConfigurator([
+            'class' => HomePage::class,
+        ]);
+
         $navigation->addConfigurator([
             'class' => Configurator::class,
             'module' => 'import',

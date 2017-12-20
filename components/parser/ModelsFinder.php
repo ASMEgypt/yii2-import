@@ -11,6 +11,7 @@ namespace execut\import\components\parser;
 
 use execut\import\components\parser\exception\MoreThanOne;
 use execut\import\components\parser\exception\NotFoundRecord;
+use execut\import\Query;
 use yii\base\Component;
 use yii\helpers\Json;
 
@@ -114,7 +115,11 @@ class ModelsFinder extends Component
             $result->addModel($model);
         } else {
             $attributeForSearch = $this->getAttributesForSearch();
-            $q->byAttributesScopes($attributeForSearch);
+            if ($q instanceof Query) {
+                $q->byImportAttributes($attributeForSearch);
+            } else {
+                $q->andWhere($attributeForSearch);
+            }
 
             $qForCount = clone $q;
             $qForCount->orderBy = null;

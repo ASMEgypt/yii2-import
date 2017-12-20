@@ -6,13 +6,8 @@
  */
 
 namespace execut\import\models;
-
-
-use execut\CacheTrait;
-
 class FilesStatuse extends base\FilesStatuse
 {
-    use CacheTrait;
     const NEW = 'new';
     const RELOAD = 'reload';
     const DELETE = 'delete';
@@ -22,11 +17,17 @@ class FilesStatuse extends base\FilesStatuse
     const ERROR = 'error';
     const STOPED = 'stoped';
     const STOP = 'stop';
+    protected static $statusesByKeys = [];
     public static function find() {
         return new \execut\import\models\queries\FilesStatuse(__CLASS__);
     }
 
-    public static function getIdByKey($key) {
-        return self::_cacheStatic(function () use ($key) {return self::find()->byKey($key)->select('id')->createCommand()->queryScalar();}, $key);
+    public static function getIdByKey($key)
+    {
+        if (empty(self::$statusesByKeys[$key])) {
+            self::$statusesByKeys[$key] = self::find()->byKey($key)->select('id')->createCommand()->queryScalar();
+        }
+
+        return self::$statusesByKeys[$key];
     }
 }
