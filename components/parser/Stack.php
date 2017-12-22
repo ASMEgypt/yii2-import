@@ -62,7 +62,7 @@ class Stack extends Component
         }
 
         $parser = $this->parsers[$parserKey];
-        $parserAttributes = array_merge($relations, $parser->attributes);
+        $parserAttributes = array_merge($relations, $parser->getAttributesFromRow());
         $parser->attributes = $parserAttributes;
         $result = $parser->parse();
         $model = $result->getModel();
@@ -77,9 +77,17 @@ class Stack extends Component
         return $this->results[$parserKey] = $model;
     }
 
-    public function setRow($row) {
-        foreach ($this->parsers as $parser) {
-            $parser->row = $row;
+    public $currentRow = 0;
+    public $rows;
+    public function getRow($rowNbr = null) {
+        if ($rowNbr === null) {
+            $rowNbr = $this->currentRow;
         }
+
+        return $this->rows[$rowNbr];
+    }
+
+    public function getRows() {
+        return $this->rows;
     }
 }

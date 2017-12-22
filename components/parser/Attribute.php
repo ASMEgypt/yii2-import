@@ -35,14 +35,10 @@ class Attribute extends Component
                 return $value;
             }
         }
+    }
 
-        if ($this->isRequired) {
-            $exception = new ColumnIsEmpty();
-            $exception->columnNbr = $this->column;
-            $exception->attribute = $this->key;
-
-            throw $exception;
-        }
+    public function isValid() {
+        return empty($this->getValue()) && !$this->isRequired || !empty($this->getValue()) && $this->isRequired;
     }
 
     public function setValue($value) {

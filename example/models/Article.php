@@ -13,7 +13,7 @@ use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveRecord;
 use yii\db\Expression;
 
-class Product extends ActiveRecord
+class Article extends ActiveRecord
 {
     public function behaviors()
     {
@@ -30,24 +30,13 @@ class Product extends ActiveRecord
     public function rules()
     {
         return [
-            ['price', 'filter', 'filter' => function ($value) {
-                return (double) $value;
-            }],
-            ['id', 'safe'],
-            [['name', 'price',
-                'example_article_id'
-            ], 'required'],
+            [['article', 'example_brand_id'], 'required'],
+            [['source'], 'safe'],
         ];
-    }
-
-    public function getExampleArticle() {
-        return $this->hasOne(Article::class, [
-            'id' => 'example_article_id',
-        ]);
     }
 
     public static function tableName()
     {
-        return 'example_products';
+        return 'example_articles';
     }
 }

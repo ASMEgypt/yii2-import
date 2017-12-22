@@ -8,13 +8,11 @@
 namespace execut\import\controllers;
 
 
-use execut\import\components\parser\exception\Exception;
-use execut\import\components\parser\Stack;
+use execut\import\components\Importer;
 use execut\import\models\FilesStatuse;
-use execut\import\models\Log;
 use execut\import\models\File;
 use execut\import\models\Setting;
-use execut\multiprocess\Wrapper;
+
 use yii\console\Controller;
 use yii\log\Logger;
 use yii\mutex\Mutex;
@@ -22,7 +20,6 @@ use yii\mutex\Mutex;
 class ConsoleController extends Controller
 {
     public $loadsLimit = 20;
-    public $checkedFileStatusRows = 1000;
     protected $lastCheckedRow = 0;
     public function actionIndex($id = null) {
         ini_set('memory_limit', -1);
@@ -137,83 +134,23 @@ class ConsoleController extends Controller
 
         $stacksSettings = $file->getSettings();
         \yii::$app->db->close();
-        $multiWrapper = new Wrapper([
-            'threadsCount' => 1,
-            'callback' => function ($row, $rowKey) use ($stacksSettings, $file) {
-                try {
-                    if ($this->lastCheckedRow >= $this->checkedFileStatusRows) {
-                        if ($file->isStop()) {
-                            $file->triggerStop();
-                            return;
-                        }
-
-                        if ($file->isCancelLoading()) {
-                            $this->stdout('Cancel file loading ' . $file . "\n");
-                            return;
-                        }
-
-                        $this->lastCheckedRow = 0;
-                    } else {
-                        $this->lastCheckedRow++;
-                    }
-
-                    /**
-                     * @var Stack[] $stacks
-                     */
-                    $stacks = [];
-                    foreach ($stacksSettings as $key => $stacksSetting) {
-                        $stacks[] = new Stack($stacksSetting);
-                    }
-
-                    foreach ($stacks as $stack) {
-                        $stack->setRow($row);
-                        $result = $stack->parse();
-                        $file->triggerSuccessRow();
-                    }
-                } catch (Exception $e) {
-                    $attributes = [
-                        'level' => Logger::LEVEL_WARNING,
-                        'category' => $e->getLogCategory(),
-                        'message' => $e->getLogMessage(),
-                        'import_file_id' => $file->id,
-                        'row_nbr' => $rowKey + $file->setting->ignored_lines + 1,
-                        'column_nbr' => $e->columnNbr
-                    ];
-                    $this->logError($attributes);
-                    $file->triggerErrorRow();
-                } catch (\Exception $e) {
-                    $attributes = [
-                        'level' => Logger::LEVEL_ERROR,
-                        'category' => 'import.error',
-                        'message' => $e->getMessage() . "\n" . $e->getTraceAsString(),
-                        'import_file_id' => $file->id,
-                        'row_nbr' => $rowKey + $file->setting->ignored_lines + 1,
-                    ];
-                    $this->logError($attributes);
-
-                    $file->triggerException();
-                    throw $e;
-                }
-            },
-            'data' => $data,
+//        $multiWrapper = new Wrapper([
+//            'threadsCount' => 1,
+//            'callback' => function ($row, $rowKey) use ($stacksSettings, $file) {
+        $importer = new Importer([
+            'file' => $file,
+            'rows' => $data,
+            'settings' => $stacksSettings,
         ]);
-        $multiWrapper->run();
+        $importer->run();
+//            },
+//            'data' => $data,
+//        ]);
+//        $multiWrapper->run();
 
         $file->triggerLoaded();
 
         $this->stdout('Complete parse file #' . $file->id . ' ' . $file->name . "\n");
-    }
-
-    /**
-     * @param $attributes
-     */
-    protected function logError($attributes)
-    {
-        $log = new Log($attributes);
-        if (!$log->save()) {
-            var_dump($log->errors);
-            exit;
-        }
     }
 
     public function actionCheckSource($type = 'email', $id = null) {

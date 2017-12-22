@@ -20,8 +20,6 @@ use yii\base\Exception;
 
 class Parser extends Component
 {
-    public $query = null;
-    public $row = null;
     protected $attributes = [];
     public $isValidate = true;
     /**
@@ -57,17 +55,9 @@ class Parser extends Component
         }
 
         $this->modelsFinder->stack = $this->getStack();
+        $this->modelsFinder->parser = $this;
 
         return $this->modelsFinder;
-    }
-
-    public function getAttributes() {
-        $attributes = $this->attributes;
-        foreach ($attributes as $key => $attribute) {
-            $attribute->row = $this->row;
-        }
-
-        return $attributes;
     }
 
     public function setAttributes($attributes) {
@@ -97,15 +87,13 @@ class Parser extends Component
 
     public function parse() {
         $settedAttributes = [];
-        $attributes = $this->getAttributes();
+        $attributes = $this->getAttributesFromRow();
         foreach ($attributes as $key => $attribute) {
             $settedAttributes[$key] = $attribute->value;
         }
 
         $modelsFinder = $this->getModelsFinder();
-
-        $modelsFinder->attributes = $attributes;
-
+        $this->prevalidateAttributes();
         $result = $modelsFinder->findModel();
         foreach ($result->getModels() as $model) {
             if ($this->isValidate) {
@@ -116,20 +104,31 @@ class Parser extends Component
         return $result;
     }
 
+    public function prevalidateAttributes() {
+        $attributes = $this->getAttributesFromRow();
+        foreach ($attributes as $attribute)
+        if (!$attribute->isValid()) {
+            $exception = new ColumnIsEmpty();
+            $exception->columnNbr = $attribute->column;
+            $exception->attribute = $attribute->key;
+
+            throw $exception;
+        }
+    }
+
     /**
      * @param ActiveRecord $model
      * @param $attributes
      */
     protected function validateAttributes($model, $attributesKeys) {
-        $columns = [];
-        $attributes = $this->getAttributes();
-        foreach ($attributesKeys as $attribute) {
-            if (isset($attributes[$attribute]) && $attributes[$attribute]->column !== null) {
-                if (!$model->validate([$attribute], false)) {
+        $attributes = $this->getAttributesFromRow();
+        foreach ($attributesKeys as $attributeKey) {
+            if (isset($attributes[$attributeKey]) && $attributes[$attributeKey]->column !== null) {
+                if (!$model->validate([$attributeKey], false)) {
                     $e = new Validate();
                     $e->errors = $model->errors;
-                    $e->columnNbr = $attributes[$attribute]->column;
-                    $e->attribute = $attribute;
+                    $e->columnNbr = $attributes[$attributeKey]->column;
+                    $e->attribute = $attributeKey;
 
                     throw $e;
                 }
@@ -151,5 +150,20 @@ class Parser extends Component
         $model->attributes = $result;
 
         return $model;
+    }
+
+    /**
+     * @param $row
+     * @return array
+     */
+    public function getAttributesFromRow($rowNbr = null): array
+    {
+        $row = $this->getStack()->getRow($rowNbr);
+        $attributes = $this->attributes;
+        foreach ($attributes as $attribute) {
+            $attribute->row = $row;
+        }
+
+        return $attributes;
     }
 }

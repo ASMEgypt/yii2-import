@@ -46,7 +46,6 @@ class ParserTest extends TestCase
 
 
     public function testParse() {
-        $q = ParserTestModel::find();
         $modelsFinder = $this->getMockBuilder(ModelsFinder::class)
             ->setMethods(['findModel'])
             ->getMock();
@@ -56,8 +55,10 @@ class ParserTest extends TestCase
         ]);
         $parser = new Parser([
             'modelsFinder' => $modelsFinder,
-            'row' => [
-                'value',
+            'data' => [
+                [
+                    'value',
+                ],
             ],
             'attributes' => [
                 'name' => $attribute
