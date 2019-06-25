@@ -9,8 +9,11 @@ namespace execut\import\controllers;
 
 
 use execut\import\components\Importer;
+use execut\import\components\parser\exception\Exception;
+use execut\import\components\parser\Stack;
 use execut\import\models\FilesStatuse;
 use execut\import\models\File;
+use execut\import\models\Log;
 use execut\import\models\Setting;
 
 use yii\console\Controller;
@@ -20,14 +23,32 @@ use yii\mutex\Mutex;
 class ConsoleController extends Controller
 {
     public $loadsLimit = 20;
+    public $stackSize = 650;
+    public $fileId = null;
     protected $lastCheckedRow = 0;
-    public function actionIndex($id = null) {
+
+    public function options($actionID)
+    {
+        if ($actionID === 'index') {
+            return [
+                'fileId',
+                'stackSize',
+            ];
+        }
+        // $actionId might be used in subclasses to provide options specific to action id
+        return ['color', 'interactive', 'help'];
+    }
+
+    public function actionIndex() {
         ini_set('memory_limit', -1);
+        $id = $this->fileId;
         $this->clearOldFiles();
-        $q = File::find()->isOnlyFresh()->orderBy('created ASC');
+        $q = File::find();
+        $this->markErrorFiles();
         if ($id === null) {
-            $q->isForImport();
-            $currentFilesCount = File::find()->isLoading()->count();
+            $q->byHostName(gethostname());
+            $q->isForImport()->isOnlyFresh()->orderBy('created ASC');
+            $currentFilesCount = File::find()->byHostName(gethostname())->isLoading()->count();
             if ($currentFilesCount >= $this->loadsLimit) {
                 echo 'Files limit reached ' . $this->loadsLimit . '. Now loaded ' . $currentFilesCount . ' files';
                 return;
@@ -92,6 +113,29 @@ class ConsoleController extends Controller
         }
     }
 
+    protected function markErrorFiles()
+    {
+        $this->waitForRelease();
+        $this->stdout('Start check failed files' . "\n");
+        /**
+         * @var File $file
+         */
+        $files = File::find()->byHostName(gethostname())->isWithoutProcess()->isInProgress()->all();
+        foreach ($files as $file) {
+            $attributes = [
+                'level' => Logger::LEVEL_ERROR,
+                'category' => 'import.notFoundProcess',
+                'message' => 'The process ' . $file->process_id . ' to import the file was not found',
+            ];
+            $file->logError($attributes);
+            $file->triggerException();
+            $this->stdout('File ' . $file->id . ' is marked as errored' . "\n");
+        }
+
+        $this->release();
+        $this->stdout('End check failed files' . "\n");
+    }
+
     protected function clearOldFiles()
     {
         while (true) {
@@ -99,7 +143,7 @@ class ConsoleController extends Controller
             /**
              * @var File $file
              */
-            $file = File::find()->isForClean()->one();
+            $file = File::find()->byHostName(gethostname())->isForClean()->one();
             if (!$file) {
                 $this->release();
                 break;
@@ -113,44 +157,34 @@ class ConsoleController extends Controller
 
     protected function parseFile(File $file) {
         $this->stdout('Start parse file #' . $file->id . ' ' . $file->name . "\n");
+        $data = $file->getRows();
+//        $data = array_splice($data, 23400, 1000000);
         $file->scenario = 'import';
         try {
             ini_set('error_reporting', E_ERROR);
-            $file->rows_count = $file->calculatedSetsCount;
+            $file->rows_count = count($data);
             $file->save();
-            $data = $file->getRows();
             ini_set('error_reporting', E_ALL);
         } catch (\Exception $e) {
             $attributes = [
                 'level' => Logger::LEVEL_ERROR,
                 'category' => 'import.fatalError',
                 'message' => $e->getMessage() . "\n" . $e->getTraceAsString(),
-                'import_file_id' => $file->id,
             ];
-            $this->logError($attributes);
+            $file->logError($attributes);
             $file->triggerException();
             throw $e;
         }
 
         $stacksSettings = $file->getSettings();
-        \yii::$app->db->close();
-//        $multiWrapper = new Wrapper([
-//            'threadsCount' => 1,
-//            'callback' => function ($row, $rowKey) use ($stacksSettings, $file) {
+        //        \yii::$app->db->close();
         $importer = new Importer([
             'file' => $file,
-            'rows' => $data,
             'settings' => $stacksSettings,
+            'data' => $data,
+            'stackSize' => $this->stackSize,
         ]);
         $importer->run();
-//            },
-//            'data' => $data,
-//        ]);
-//        $multiWrapper->run();
-
-        $file->triggerLoaded();
-
-        $this->stdout('Complete parse file #' . $file->id . ' ' . $file->name . "\n");
     }
 
     public function actionCheckSource($type = 'email', $id = null) {
@@ -165,7 +199,7 @@ class ConsoleController extends Controller
 
         $q = Setting::find();
         if ($id !== null) {
-            $q->byId($id);
+            $q->andWhere(['id' => $id]);
         } else {
             $q->byImportFilesSource_key($type);
         }
@@ -180,7 +214,14 @@ class ConsoleController extends Controller
             if (!empty($files)) {
                 foreach ($files as $file) {
                     $md5 = md5_file($file->filePath);
-                    if (File::find()->byMd5($md5)->count()) {
+                    if ($importFile = File::find()->byMd5($md5)->select(['id', 'updated'])->one()) {
+                        $importFile->updated = date('Y-m-d H:i:s');
+                        /**
+                         * @var File $file
+                         */
+                        $importFile->save(false, [
+                            'updated'
+                        ]);
                         echo 'File with md5 ' . $md5 . ' is already exists' . "\n";
                     } else {
                         $importFile = new File();
@@ -190,6 +231,7 @@ class ConsoleController extends Controller
                             'extension' => $fileInfo['extension'],
                             'mime_type' => mime_content_type($file->filePath),
                             'import_setting_id' => $setting->id,
+                            'import_files_source_id' => $setting->filesSource->id,
                             'content' => $file->content,
                         ];
 
@@ -223,6 +265,7 @@ class ConsoleController extends Controller
             echo 'Wait for release' . "\n";
             sleep(1);
         }
+
         return $mutex;
     }
 

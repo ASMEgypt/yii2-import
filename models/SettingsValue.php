@@ -33,6 +33,15 @@ use yii\web\JsExpression;
 class SettingsValue extends base\SettingsValue
 {
     use BehaviorStub, ModelsHelperTrait;
+
+    /**
+     * @return \execut\import\models\queries\SettingsValue
+     */
+    public static function find()
+    {
+        return new \execut\import\models\queries\SettingsValue(static::class);
+    }
+
     public function behaviors()
     {
         return [
@@ -89,6 +98,7 @@ class SettingsValue extends base\SettingsValue
                             return $dictionaryOptions;
                         },
                         'url' => ['get-dictionaries'],
+                        'isNoRenderRelationLink' => true,
                         'widgetOptions' => [
                             'pluginOptions' => [
                                 'ajax' => [

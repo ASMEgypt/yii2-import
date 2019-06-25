@@ -19,6 +19,12 @@ use yii\helpers\ArrayHelper;
 class SettingsSet extends base\SettingsSet
 {
     use BehaviorStub, ModelsHelperTrait;
+
+    public static function find()
+    {
+        return new queries\SettingsSet(static::class);
+    }
+
     public function behaviors()
     {
         return [

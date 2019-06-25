@@ -1,246 +1,111 @@
 <?php
 namespace execut\import\components;
-use execut\import\example\models\Article;
-use execut\import\example\models\Brand;
-use execut\import\example\models\Product;
+use execut\import\models\File;
 use execut\import\models\Log;
 use yii\base\Component;
 use yii\db\ActiveQuery;
+use yii\db\ActiveRecord;
+use yii\helpers\ArrayHelper;
 use yii\log\Logger;
 
 use execut\import\components\parser\exception\Exception;
 use execut\import\components\parser\Stack;
 
 class Importer extends Component {
-    public $rows = null;
+    /**
+     * @var File
+     */
     public $file = null;
+
     public $settings = null;
     public $checkedFileStatusRows = 1000;
+    protected $badRows = [];
+    public $data = [];
+    public $currentPart = 0;
+    public $stackSize = 2000;
+    protected $extractors = null;
+    public function isBadRow($rowNbr) {
+        $currentRowNbr = $this->getCurrentStackRowNbr() + $rowNbr;
 
-    protected $lastCheckedRow = null;
-    public function saveModels($relationParams) {
-        /**
-         * @var ActiveQuery $query
-         */
-        $query = $relationParams['query'];
-        $attributesNames = [];
-        $whereValues = [];
-        $relationsModels = [];
-        foreach ($relationParams['attributes'] as $attribute => $attributeParams) {
-            if (!empty($attributeParams['isFind'])) {
-                $attributesNames[] = $attribute;
-                if (!empty($attributeParams['attributes'])) {
-                    $models = $this->saveModels($attributeParams);
-                    foreach ($models as $rowNbr => $model) {
-                        if (empty($relationsModels[$rowNbr])) {
-                            $relationsModels[$rowNbr] = [];
-                        }
+        return !empty($this->badRows['_' . $currentRowNbr]);
+    }
 
-                        $relationsModels[$rowNbr][$attribute] = $model;
-                        if (!$model->isNewRecord && !empty($model->dirtyAttributes) && empty($attributeParams['isNoUpdate'])) {
-                            if (!$model->save()) {
-                                var_dump($model->errors);
-                            }
-                        } else if ($model->isNewRecord && empty($attributeParams['isNoCreate'])) {
-                            unset($whereValues[$rowNbr]);
-                            if (!$model->save()) {
-                                var_dump($model->errors);
-                            }
-                            // Поиск не нужен, модель новая
-                            continue;
-                        }
+    public function setIsBadRow($rowNbr) {
+        $currentRowNbr = $this->getCurrentStackRowNbr() + $rowNbr;
 
-                        if (empty($whereValues[$rowNbr])) {
-                            $whereValues[$rowNbr] = [];
-                        }
+        echo $currentRowNbr . ' (' . $rowNbr . ') marked is bad ' . "\n";
 
-                        $whereValues[$rowNbr][$attribute] = $model->id;
-                    }
-                } else {
-                    foreach ($this->rows as $rowNbr => $row) {
-                        if (empty($row[$attributeParams['column'] - 1])) {
-                            continue;
-                        }
+        $this->badRows['_' . $currentRowNbr] = true;
+        return $this;
+    }
 
-                        if (empty($whereValues[$rowNbr])) {
-                            $whereValues[$rowNbr] = [];
-                        }
+    public function logError($message, $rowNbr, $model, $columnNbr = null) {
+        $currentRowNbr = $this->getCurrentStackRowNbr() + $rowNbr;
+        $attributes = [
+            'level' => Logger::LEVEL_ERROR,
+            'category' => 'import.fatalError',
+            'row_nbr' => $rowNbr,
+            'column_nbr' => $columnNbr,
+            'message' => $message,
+        ];
 
-                        $whereValues[$rowNbr][$attribute] = $row[$attributeParams['column'] - 1];
-                    }
-                }
-            }
-        }
-
-        $query->andWhere([
-            'IN',
-            $attributesNames,
-            $whereValues,
-        ])->indexBy(function ($row) use ($attributesNames, $whereValues) {
-            $searchedAttributes = [];
-            foreach ($attributesNames as $attributesName) {
-                $searchedAttributes[$attributesName] = $row[$attributesName];
-            }
-            return implode('-', $searchedAttributes);
-        });
-
-        $modelsByUniqueKey = $query->all();
-        $models = [];
-        foreach ($this->rows as $rowNbr => $row) {
-            $attributes = [];
-            foreach ($relationParams['attributes'] as $attribute => $attributeParams) {
-                if (!empty($attributeParams['attributes'])) {
-                    if (empty($relationsModels[$rowNbr])) {
-                        continue 2;
-                    }
-
-                    $attributes[$attribute] = $relationsModels[$rowNbr][$attribute]->id;
-                } else {
-                    if (empty($row[$attributeParams['column'] - 1])) {
-                        continue 2;
-                    }
-
-                    $attributes[$attribute] = $row[$attributeParams['column'] - 1];
-                }
-            }
-
-            $searchedAttributes = [];
-            foreach ($attributesNames as $attributesName) {
-                $searchedAttributes[$attributesName] = $attributes[$attributesName];
-            }
-
-            $uniqueKey = implode('-', $searchedAttributes);
-
-            if (isset($modelsByUniqueKey[$uniqueKey])) {
-                $model = $modelsByUniqueKey[$uniqueKey];
+        $this->file->logError($attributes);
+        if ($model instanceof ActiveRecord) {
+            $modelInfo = get_class($model) . ' #' . $model->primaryKey;
+        } else {
+            if (is_string($model)) {
+                $modelInfo = $model;
             } else {
-                $model = new $query->modelClass;
-                $modelsByUniqueKey[$uniqueKey] = $model;
+                $modelInfo = '';
             }
-
-            $model->attributes = $attributes;
-
-            $models[$rowNbr] = $model;
         }
 
-        return $models;
+        echo 'Row #' . $currentRowNbr . ': ' . $message . ' ' . $modelInfo . ' ' . var_export($this->data[$currentRowNbr], true) . "\n";
+    }
+
+    public function getRows() {
+        $dataParts = $this->getRowsStacks();
+
+        return $dataParts[$this->currentPart];
+    }
+
+    public function getStacksCount() {
+        return count($this->getRowsStacks());
     }
 
     public function run() {
+        $this->file->triggerLoading();
         $extractors = $this->getExtractors();
+        for ($key = 0; $key < $this->getStacksCount(); $key++) {
+            $this->currentPart = $key;
+            foreach ($extractors as $extractor) {
+                $extractor->reset();
+            }
+
+            foreach ($extractors as $extractor) {
+                if ($extractor->isImport) {
+                    $models = $extractor->getModels();
+                }
+            }
+
+            $this->file->rows_errors = count($this->badRows);
+            $this->file->rows_success = ($this->getCurrentStackRowNbr()) + count($this->getRows()) - $this->file->rows_errors + 1;
+            $this->file->save(false, ['rows_errors', 'rows_success']);
+            if ($this->file->isStop()) {
+                $this->file->triggerStop();
+                return;
+            }
+        }
+
         foreach ($extractors as $extractor) {
-            if ($extractor->isImport) {
-                $models = $extractor->getModels();
-                foreach ($models as $model) {
-                    $model->validate();
-                    if (!empty($model->dirtyAttributes)) {
-                        if (!$model->save()) {
-                            var_dump($model->errors);
-                        }
-                    }
-                }
-            }
-        }
-        return;
-
-        foreach ($attributes as $relation => $relationParams) {
-            $models = $this->saveModels($relationParams);
-            foreach ($models as $model) {
-                $model->validate();
-                if (!empty($model->dirtyAttributes)) {
-                    if (!$model->save()) {
-                        var_dump($model->errors);
-                    }
-                }
-            }
+            $extractor->deleteOldRecords();
         }
 
-        return;
-
-        $stacks = $this->getStacks();
-        foreach ($this->rows as $rowKey => $row) {
-            try {
-                if ($this->lastCheckedRow >= $this->checkedFileStatusRows) {
-                    if ($this->file->isStop()) {
-                        $this->file->triggerStop();
-                        return;
-                    }
-
-                    if ($this->file->isCancelLoading()) {
-                        //                        $this->stdout('Cancel file loading ' . $this->file . "\n");
-                        return;
-                    }
-
-                    $this->lastCheckedRow = 0;
-                } else {
-                    $this->lastCheckedRow++;
-                }
-
-                foreach ($stacks as $stack) {
-                    $stack->currentRow = $rowKey;
-                    $result = $stack->parse();
-                    $this->file->triggerSuccessRow();
-                }
-            } catch (Exception $e) {
-                $attributes = [
-                    'level' => Logger::LEVEL_WARNING,
-                    'category' => $e->getLogCategory(),
-                    'message' => $e->getLogMessage(),
-                    'import_file_id' => $this->file->id,
-                    'row_nbr' => $rowKey + $this->file->setting->ignored_lines + 1,
-                    'column_nbr' => $e->columnNbr
-                ];
-                $this->logError($attributes);
-                $this->file->triggerErrorRow();
-            } catch (\Exception $e) {
-                $attributes = [
-                    'level' => Logger::LEVEL_ERROR,
-                    'category' => 'import.error',
-                    'message' => $e->getMessage() . "\n" . $e->getTraceAsString(),
-                    'import_file_id' => $this->file->id,
-                    'row_nbr' => $rowKey + $this->file->setting->ignored_lines + 1,
-                ];
-                $this->logError($attributes);
-
-                $this->file->triggerException();
-                throw $e;
-            }
-        }
+        $this->file->triggerLoaded();
     }
 
     /**
-     * @param $attributes
-     */
-    protected function logError($attributes)
-    {
-        $log = new Log($attributes);
-        if (!$log->save()) {
-            var_dump($log->errors);
-            exit;
-        }
-    }
-
-    /**
-     * @return Stack[]
-     */
-    protected function getStacks()
-    {
-        /**
-         * @var Stack[] $stacks
-         */
-        $stacks = [];
-        foreach ($this->settings as $key => $stacksSetting) {
-            $stack = new Stack($stacksSetting);
-            $stack->rows = $this->rows;
-            $stacks[] = $stack;
-        }
-        return $stacks;
-    }
-
-    protected $extractors = null;
-
-    /**
-     * @return array
+     * @return ModelsExtractor
      */
     public function getExtractor($id)
     {
@@ -256,64 +121,65 @@ class Importer extends Component {
         }
     }
 
+    /**
+     * @return ModelsExtractor[]
+     */
     public function getExtractors()
     {
         if ($this->extractors !== null) {
             return $this->extractors;
         }
 
-        $attributes = [
-            'example_product_id' => [
-                'query' => Product::find(),
-                'isImport' => true,
-                'attributes' => [
-                    'name' => [
-                        'isFind' => true,
-                        'column' => 1,
-                    ],
-                    'price' => [
-                        'column' => 2,
-                    ],
-                    'example_article_id' => [
-                        'isFind' => true,
-                    ],
-                ],
-            ],
-            'example_article_id' => [
-                'query' => Article::find(),
-                'isImport' => false,
-                'attributes' => [
-                    'article' => [
-                        'isFind' => true,
-                        'column' => 3,
-                    ],
-                    'source' => [
-                        'column' => 4,
-                    ],
-                    'example_brand_id' => [
-                        'isFind' => true,
-                    ],
-                ],
-            ],
-            'example_brand_id' => [
-                'isImport' => false,
-                'query' => Brand::find(),
-                'attributes' => [
-                    'name' => [
-                        'isFind' => true,
-                        'column' => 5,
-                    ],
-                ],
-            ],
-        ];
+        $attributes = $this->settings;
 
         $extractors = [];
         foreach ($attributes as $extractorId => $params) {
+            $params['id'] = $extractorId;
             $params['importer'] = $this;
+            if (!empty($params['attributes']['id'])) {
+                $params['attributes'] = [
+                    'id' => [
+                        'isFind' => true,
+                        'value' => (int) $params['attributes']['id'],
+                    ],
+                ];
+            }
+
             $extractor = new ModelsExtractor($params);
+            if ($extractor->isDelete) {
+                $extractor->deletedIds = $this->getDeletedIds();
+            }
+
             $extractors[$extractorId] = $extractor;
         }
 
         return $this->extractors = $extractors;
+    }
+
+    public function getDeletedIds() {
+        $ids = \yii::$app->getModule('import')->getOldIdsByFile($this->file);
+        $result = [];
+        foreach ($ids as $id) {
+            $result[$id] = $id;
+        }
+
+        return $result;
+    }
+
+    /**
+     * @return int
+     */
+    public function getCurrentStackRowNbr(): int
+    {
+        return $this->currentPart * $this->stackSize;
+    }
+
+    /**
+     * @return array
+     */
+    protected function getRowsStacks()
+    {
+        $dataParts = array_chunk($this->data, $this->stackSize);
+        return $dataParts;
     }
 }

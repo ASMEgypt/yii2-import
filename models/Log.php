@@ -3,6 +3,7 @@
 namespace execut\import\models;
 use execut\crudFields\Behavior;
 use execut\crudFields\BehaviorStub;
+use execut\crudFields\fields\HasOneSelect2;
 use execut\crudFields\ModelsHelperTrait;
 use yii\behaviors\TimestampBehavior;
 use yii\db\Expression;
@@ -20,6 +21,12 @@ class Log extends \execut\import\models\base\Log
                 'class' => Behavior::class,
                 'module' => 'import',
                 'fields' => $this->getStandardFields(['visible', 'name', 'actions'], [
+//                    'file' => [
+//                        'class' => HasOneSelect2::class,
+//                        'attribute' => 'import_file_id',
+//                        'relation' => 'file',
+//                        'scope' => false,
+//                    ],
                     'level',
                     'category',
                     'prefix',
@@ -40,5 +47,12 @@ class Log extends \execut\import\models\base\Log
                 'value' => new Expression('NOW()'),
             ],
         ];
+    }
+
+    public function search()
+    {
+        $dataProvider = $this->getBehavior('fields')->search();
+
+        return $dataProvider;
     }
 }

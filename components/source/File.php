@@ -15,6 +15,7 @@ class File extends Component
 {
     public $fileName = null;
     public $filePath = null;
+    public $folder = null;
     protected $content = null;
     public function getContent() {
         if ($this->filePath !== null && $this->content === null) {
@@ -35,6 +36,7 @@ class File extends Component
     {
         if ($this->filePath !== null && file_exists($this->filePath)) {
             unlink($this->filePath);
+            @rmdir(dirname($this->filePath));
         }
     }
 }

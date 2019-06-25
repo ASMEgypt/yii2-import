@@ -30,7 +30,7 @@ class Receiver extends Component
 
     public function getSearchCriteria() {
         if ($this->searchCriteria === null) {
-            return 'UNSEEN SINCE "' . date('d F Y') . '"';
+            return 'UNSEEN SINCE "' . date('d F Y', time() - 3600 * 24 * 10) . '"';
         }
 
         return $this->searchCriteria;

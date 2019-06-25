@@ -11,5 +11,5 @@ namespace execut\import;
 
 interface ModelInterface
 {
-    public function getImportUniqueKeys($attributesNames);
+    public function getImportUniqueKeys($attributesNames, $whereValues);
 }

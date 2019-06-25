@@ -20,6 +20,12 @@ class Setting extends ActiveQuery
         ]);
     }
 
+    public function byImportFilesSource_key($key) {
+        return $this->andWhere([
+            'import_files_source_id' => models\FilesSource::find()->andWhere(['key' => $key])->select('id')
+        ]);
+    }
+
     public function forSelect() {
         return ArrayHelper::map($this->select(['id', 'name'])->asArray()->all(), 'id', 'name');
     }

@@ -31,7 +31,7 @@ interface Plugin
     /**
      * Удаляет привязанные к файлу импорта записи
      */
-    public function deleteRelatedRecords(File $importFile);
+    public function getOldIdsByFile(File $importFile);
 
     public function getAllowedRoles();
 

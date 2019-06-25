@@ -13,12 +13,8 @@ use yii\base\Component;
 
 class Stack extends Component
 {
-    /**
-     * @var Parser[]
-     */
     protected $parsers = [];
     public $relations = [];
-    public $stacks = [];
     public function setParsers($parsers) {
         foreach ($parsers as $key => $parser) {
             if (is_array($parser)) {
@@ -62,7 +58,7 @@ class Stack extends Component
         }
 
         $parser = $this->parsers[$parserKey];
-        $parserAttributes = array_merge($relations, $parser->getAttributesFromRow());
+        $parserAttributes = array_merge($relations, $parser->attributes);
         $parser->attributes = $parserAttributes;
         $result = $parser->parse();
         $model = $result->getModel();
@@ -71,23 +67,16 @@ class Stack extends Component
         }
 
         if ($model->isNewRecord || $parser->modelsFinder->isUpdateAlways) {
-            $model->save(false);
+            echo 'Save' . "\n";
+//            $model->save(false);
         }
 
         return $this->results[$parserKey] = $model;
     }
 
-    public $currentRow = 0;
-    public $rows;
-    public function getRow($rowNbr = null) {
-        if ($rowNbr === null) {
-            $rowNbr = $this->currentRow;
+    public function setRow($row) {
+        foreach ($this->parsers as $parser) {
+            $parser->row = $row;
         }
-
-        return $this->rows[$rowNbr];
-    }
-
-    public function getRows() {
-        return $this->rows;
     }
 }

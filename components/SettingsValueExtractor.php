@@ -19,11 +19,15 @@ class SettingsValueExtractor extends Component
         $model = $this->model;
         $type = $model->type;
         $parts = explode('.', $type);
+        if (!empty($parts[1]) && $parts[1] == 'upperName') {
+            $parts[1] = 'name';
+        }
+
         if ($model->value_option) {
-            $result['id'] = $model->value_option;
+            $result['id'] = (int) $model->value_option;
         } else if ($model->column_nbr !== null && $model->column_nbr !== '') {
             $columnResult = [
-                'column' => $model->column_nbr - 1
+                'column' => $model->column_nbr
             ];
 
             if (!empty($model->number_delimiter)) {

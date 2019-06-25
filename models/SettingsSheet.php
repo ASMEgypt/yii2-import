@@ -31,6 +31,12 @@ class SettingsSheet extends base\SettingsSheet
 {
     use BehaviorStub, ModelsHelperTrait;
     protected static $settingsByIds = [];
+
+    public static function find()
+    {
+        return new queries\SettingsSheet(static::class);
+    }
+
     public function behaviors()
     {
         return [
@@ -51,6 +57,7 @@ class SettingsSheet extends base\SettingsSheet
                     'order' => [
                         'class' => NumberField::class,
                         'attribute' => 'order',
+                        'defaultValue' => 1,
                     ],
                     'settingsSets' => [
                         'class' => HasManyMultipleInput::class,
@@ -88,17 +95,24 @@ class SettingsSheet extends base\SettingsSheet
         $settings = [];
         $extractor = new SettingsValueExtractor();
         $typesSettings = self::getParsersByTypesSettings();
-        $saver = new Saver();
         foreach ($this->settingsSets as $set) {
+            if ($set->type === 'details_base_id_new') {
+                continue;
+            }
+
             $typeSettings = [];
             foreach ($set->settingsValues as $value) {
                 $extractor->model = $value;
                 $typeSettings = ArrayHelper::merge($typeSettings, $extractor->extract());
             }
 
-            $settings[] = ArrayHelper::merge($typesSettings[$set->type], [
-                'parsers' => $typeSettings,
-            ]);
+//            foreach ($typeSettings as $setting) {
+//                foreach ($settings['attributes'] as $attribute) {
+//                }
+//            }
+
+            $settings = ArrayHelper::merge($settings, $typesSettings[$set->type]);
+            $settings = ArrayHelper::merge($settings, $typeSettings);
         }
 
         self::$settingsByIds[$this->id] = $settings;

@@ -79,6 +79,7 @@ class Filter extends Component
         foreach ($mails as $mailKey => $mail) {
             $isMatch = true;
             $subject = mb_strtolower($mail->$attribute);
+            $subject = trim($subject);
             if (strpos($subjectTemplate, '*') !== false) {
                 $parts = explode('*', $subjectTemplate);
                 $prevMatchPos = false;

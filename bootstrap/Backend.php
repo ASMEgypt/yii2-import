@@ -1,11 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: execut
- * Date: 7/31/17
- * Time: 3:28 PM
- */
-
 namespace execut\import\bootstrap;
 use execut\actions\Bootstrap;
 use execut\crud\navigation\Configurator;
@@ -64,9 +57,6 @@ class Backend extends Common
          * @var Component $navigation
          */
         $navigation = $app->navigation;
-        $navigation->addConfigurator([
-            'class' => HomePage::class,
-        ]);
 
         $navigation->addConfigurator([
             'class' => Configurator::class,

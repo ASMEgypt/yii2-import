@@ -133,4 +133,49 @@ class Plugin implements \execut\import\Plugin
 
     public function bootstrapNavigation(Component $navigation) {
     }
+
+//[
+//'example_product_id' => [
+//'query' => Product::find(),
+//'isImport' => true,
+//'attributes' => [
+//'name' => [
+//'isFind' => true,
+//'column' => 1,
+//],
+//'price' => [
+//'column' => 2,
+//],
+//'example_article_id' => [
+//'isFind' => true,
+//],
+//],
+//],
+//'example_article_id' => [
+//'query' => Article::find(),
+//'isImport' => false,
+//'attributes' => [
+//'article' => [
+//'isFind' => true,
+//'column' => 3,
+//],
+//'source' => [
+//'column' => 4,
+//],
+//'example_brand_id' => [
+//'isFind' => true,
+//],
+//],
+//],
+//'example_brand_id' => [
+//'isImport' => false,
+//'query' => Brand::find(),
+//'attributes' => [
+//'name' => [
+//'isFind' => true,
+//'column' => 5,
+//],
+//],
+//],
+//]
 }

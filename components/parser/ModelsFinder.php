@@ -20,16 +20,16 @@ class ModelsFinder extends Component
     public $isCreateAlways = false;
     public $isUpdateAlways = false;
     public $isCreateNotExisted = false;
+    public $attributes = null;
     static $cache = [];
     public $query = null;
     public $prepareQuery = null;
+    public $advancedSearch = null;
     public $asArray = false;
     /**
      * @var Stack
      */
     public $stack = null;
-    public $advancedSearch = null;
-    public $parser = null;
 
     protected function findModelFromCache() {
         if ($model = $this->getCache()) {
@@ -154,7 +154,7 @@ class ModelsFinder extends Component
      */
     protected function getAttributesForSearch(): array
     {
-        $attributes = $this->getAttributesFromRow();
+        $attributes = $this->getAttributes();
         $attributeForSearch = [];
         foreach ($attributes as $attribute) {
             if ($attribute->isForSearchQuery) {
@@ -170,7 +170,7 @@ class ModelsFinder extends Component
     protected function getAttributesValues(): array
     {
         $attributesValues = [];
-        $attributes = $this->getAttributesFromRow();
+        $attributes = $this->getAttributes();
         foreach ($attributes as $attribute) {
             $attributesValues[$attribute->key] = $attribute->value;
         }
@@ -181,9 +181,9 @@ class ModelsFinder extends Component
      * @param $row
      * @return array
      */
-    protected function getAttributesFromRow($rowNbr = null): array
+    protected function getAttributes(): array
     {
-        return $this->parser->getAttributesFromRow($rowNbr);
+        return $this->attributes;
     }
 
     protected function initCache(): void

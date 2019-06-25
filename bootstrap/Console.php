@@ -1,11 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: execut
- * Date: 7/31/17
- * Time: 3:28 PM
- */
-
 namespace execut\import\bootstrap;
 use yii\helpers\ArrayHelper;
 use yii\mutex\FileMutex;

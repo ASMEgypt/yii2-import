@@ -15,6 +15,7 @@ use execut\import\components\Source;
 use lhs\Yii2SaveRelationsBehavior\SaveRelationsBehavior;
 use Yii;
 use yii\behaviors\TimestampBehavior;
+use yii\db\ActiveRecord;
 use yii\db\Expression;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Json;
@@ -37,13 +38,27 @@ use yii\helpers\Json;
  * @property \execut\import\models\FilesSource $importFilesSource
  * @property \execut\import\models\SettingsSheet[] $importSettingsSheets
  */
-class Setting extends base\Setting
+class Setting extends ActiveRecord
 {
     use ModelsHelperTrait, BehaviorStub;
     const MODEL_NAME = '{n,plural,=0{Setting} =1{Setting} other{Settings}}';
+
+    public function rules()
+    {
+        return $this->getBehavior('fields')->rules();
+    }
+
     public static function find()
     {
         return new queries\Setting(static::class);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public static function tableName()
+    {
+        return 'import_settings';
     }
 
     public function getSource() {
@@ -223,5 +238,37 @@ class Setting extends base\Setting
     public function __toString()
     {
         return '#' . $this->id . ' ' . $this->name;
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getFiles()
+    {
+        return $this->hasMany(\execut\import\models\File::className(), ['import_setting_id' => 'id'])->inverseOf('importSetting');
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getFilesEncoding()
+    {
+        return $this->hasOne(\execut\import\models\FilesEncoding::className(), ['id' => 'import_files_encoding_id'])->inverseOf('settings');
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getFilesSource()
+    {
+        return $this->hasOne(\execut\import\models\FilesSource::className(), ['id' => 'import_files_source_id'])->inverseOf('settings');
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getSettingsSheets()
+    {
+        return $this->hasMany(\execut\import\models\SettingsSheet::className(), ['import_setting_id' => 'id'])->inverseOf('setting');
     }
 }

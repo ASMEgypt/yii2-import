@@ -27,6 +27,7 @@ return [
     'ContentFile' => 'Файл',
     'Md5' => 'Кеш',
     'EventStatus' => 'Статус события',
+    'Time Complete Calculated' => 'Время завершения',
 
     'Ignored Lines' => 'Пропустить строк',
     'Email' => 'Шаблон почты отправителя',
@@ -69,4 +70,5 @@ return [
     'Prefix' => 'Префикс',
     'Row Nbr' => 'Строчка',
     'Value' => 'Значение',
+    'Process' => 'Id процесса'
 ];

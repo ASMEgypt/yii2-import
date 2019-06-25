@@ -16,4 +16,10 @@ class SettingsSheet extends ActiveQuery
     public function byImportFileId($id) {
         return $this->byImportSettingId(models\Setting::find()->byImportFileId($id)->select('id'));
     }
+
+    public function byImportSettingId($id) {
+        return $this->andWhere([
+            'import_setting_id' => $id,
+        ]);
+    }
 }

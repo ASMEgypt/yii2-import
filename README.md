@@ -47,8 +47,7 @@ Add module bootstrap in console application config:
 
 Apply migrations via yii command:
 ```
-./yii migrate/up --migrationPath=vendor/execut/yii2-import/migrations
-./yii migrate/up --migrationPath=vendor/kartik-v/yii2-dynagrid/migrations
+./yii migrate/up --migrationPath=vendor/kartik-v/yii2-dynagrid/src/migrations
 ```
 
 After configuration, the module should open by paths:

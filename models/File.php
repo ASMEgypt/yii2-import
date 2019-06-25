@@ -2,17 +2,22 @@
 
 namespace execut\import\models;
 
+use execut\actions\action\adapter\viewRenderer\DynaGridRow;
 use execut\crudFields\Behavior;
 use execut\crudFields\BehaviorStub;
 use execut\crudFields\fields\Date;
 use execut\crudFields\fields\Field;
+use execut\crudFields\fields\HasManyMultipleInput;
 use execut\crudFields\fields\HasOneSelect2;
+use execut\crudFields\fields\RadiobuttonGroup;
 use execut\crudFields\ModelsHelperTrait;
 use execut\import\components\ToArrayConverter;
 use execut\crudFields\fields\File as FileField;
 
 use yii\behaviors\TimestampBehavior;
+use yii\db\Exception;
 use yii\db\Expression;
+use yii\helpers\ArrayHelper;
 use yii\helpers\FileHelper;
 use yii\web\UploadedFile;
 
@@ -32,7 +37,7 @@ use yii\web\UploadedFile;
  * @property \execut\import\models\FilesSource $importFilesSource
  * @property \execut\import\models\User $use
  */
-class File extends base\File
+class File extends base\File implements DynaGridRow
 {
     use ModelsHelperTrait, BehaviorStub;
 
@@ -42,6 +47,9 @@ class File extends base\File
     public $contentFile = null;
     public $preview = null;
     public $progress = null;
+
+    public function setTime_complete_calculated() {
+    }
 
 
     /**
@@ -67,7 +75,6 @@ class File extends base\File
                         'downloadUrl' => [
                             '/import/files/download'
                         ],
-                        'required' => true,
                         'allowedExtensions' => $this->getAllowedExtensions(),
                     ],
                     'import_setting_id' => [
@@ -80,10 +87,19 @@ class File extends base\File
                         ],
                     ],
                     'import_files_statuse_id' => [
-                        'class' => HasOneSelect2::class,
+                        'class' => RadiobuttonGroup::class,
                         'attribute' => 'import_files_statuse_id',
                         'relation' => 'statuse',
                         'required' => true,
+                        'defaultValue' => FilesStatuse::getIdByKey(FilesStatuse::NEW),
+                        'data' => function () {
+                            return $this->getAllowedStatusesList();
+                        },
+                        'rules' => [
+                            'validateStatus' => ['import_files_statuse_id', 'in', 'range' => function () {
+                                return array_keys($this->getAllowedStatusesList());
+                            }],
+                        ],
 //                        'rules' => [
 //                            'defaultValueOnForm' => [
 //                                'import_files_statuse_id',
@@ -111,6 +127,17 @@ class File extends base\File
                     'rows_success' => [
                         'attribute' => 'rows_success',
                         'displayOnly' => true,
+                    ],
+                    'time_complete_calculated' => [
+                        'attribute' => 'time_complete_calculated',
+                        'displayOnly' => true,
+                        'scope' => false,
+                        'column' => [
+                            'filter' => false,
+//                            'value' => function () {
+//                                return $this->getTime_complete_calculated();
+//                            }
+                        ],
                     ],
 //                    'eventsCount' => [
 //                        'attribute' => 'eventsCount',
@@ -158,6 +185,38 @@ class File extends base\File
                         'attribute' => 'end_date',
                         'displayOnly' => true,
                     ],
+                    'logsGrouped' => [
+                        'class' => HasManyMultipleInput::class,
+                        'order' => 115,
+                        'attribute' => 'logsGrouped',
+                        'relation' => 'logsGrouped',
+                        'isGridForOldRecords' => true,
+                        'scope' => false,
+                        'column' => false,
+                        'field' => false,
+                        'gridOptions' => [
+                            'responsiveWrap' => false,
+                            'showPageSummary' => true,
+                        ],
+                    ],
+                    'logs' => [
+                        'class' => HasManyMultipleInput::class,
+                        'order' => 115,
+                        'attribute' => 'logs',
+                        'relation' => 'logs',
+                        'isGridForOldRecords' => true,
+                        'scope' => false,
+                        'column' => false,
+                        'field' => false,
+                        'gridOptions' => [
+                            'responsiveWrap' => false,
+                            'showPageSummary' => true,
+                        ],
+                    ],
+                    'process_id' => [
+                        'attribute' => 'process_id',
+                        'displayOnly' => true
+                    ],
                 ]),
                 'plugins' => \yii::$app->getModule('import')->getFilesCrudFieldsPlugins(),
             ],
@@ -168,6 +227,59 @@ class File extends base\File
                 'value' => new Expression('NOW()'),
             ],
         ];
+    }
+
+    public function getOldStatuse() {
+        if ($attributes = $this->getDirtyAttributes(['import_files_statuse_id'])) {
+            if (empty($this->oldAttributes['import_files_statuse_id'])) {
+                return;
+            }
+
+            $id = $this->oldAttributes['import_files_statuse_id'];
+        } else {
+            $id = $this->import_files_statuse_id;
+        }
+
+        if ($id) {
+            return FilesStatuse::findOne($id);
+        }
+    }
+
+    public function getAllowedStatusesList() {
+        $q = FilesStatuse::find();
+        if ($this->scenario === 'form') {
+            if ($statuse = $this->getOldStatuse()) {
+                $q->isAllowedForKey($statuse->key);
+            } else {
+                $q->byKey(FilesStatuse::NEW);
+            }
+        }
+
+        return $q->forSelect();
+    }
+
+    public function getTime_complete_calculated() {
+        $secondsElapse = false;
+        if (!$this->isLoading()) {
+            $startTime = strtotime($this->start_date);
+            $endTime = strtotime($this->end_date);
+
+            $secondsElapse = $endTime - $startTime;
+        } else {
+
+            $startTime = strtotime($this->start_date);
+            $currentTime = time();
+
+            $totalRows = ($this->rows_success + $this->rows_errors);
+            if ($totalRows > 0) {
+                $secondsElapse = ($currentTime - $startTime) / $totalRows * $this->rows_count;
+            }
+
+        }
+
+        if ($secondsElapse) {
+            return date('H:i:s', $startTime + $secondsElapse) . ' (' . gmdate("H:i:s", $secondsElapse) . ')';
+        }
     }
 
     public function search() {
@@ -268,6 +380,7 @@ class File extends base\File
 
     public function triggerLoading() {
         $this->deleteLogs();
+        $this->process_id = getmypid();
         $this->start_date = date('Y-m-d H:i:s');
         $this->rows_errors = 0;
         $this->rows_success = 0;
@@ -291,8 +404,7 @@ class File extends base\File
     public function triggerLoaded() {
         $this->end_date = date('Y-m-d H:i:s');
         $this->setStatus(FilesStatuse::LOADED);
-        $this->deleteRelatedRecords();
-        $this->save();
+        $this->save(false, ['end_date', 'import_files_statuse_id']);
     }
 
     public function triggerErrorRow() {
@@ -322,7 +434,7 @@ class File extends base\File
                 'rows_errors',
                 'rows_success',
             ],
-        ]); // TODO: Change the autogenerated stub
+        ]);
     }
 
     protected $currentStep = 0;
@@ -330,7 +442,7 @@ class File extends base\File
     public function triggerCompleteRow() {
         if ($this->currentStep === $this->saveStep || $this->completeRows == $this->calculatedRowsCount) {
             $this->currentStep = 0;
-            $this->save(false);
+            $this->save(false, ['rows_errors', 'rows_success']);
         } else {
             $this->currentStep++;
         }
@@ -403,8 +515,33 @@ class File extends base\File
         return true;
     }
 
+    /**
+     * @param $attributes
+     */
+    public function logError($attributes)
+    {
+        $attributes['import_file_id'] = $this->id;
+        $log = new Log($attributes);
+        if (!$log->save()) {
+            var_dump($attributes);
+//            exit;
+        }
+    }
+
     public function deleteLogs() {
-        return Log::deleteAll(['import_file_id' => $this->id]);
+        for ($tryCount = 0; $tryCount < 4; $tryCount++) {
+            try {
+                Log::deleteAll(['import_file_id' => $this->id]);
+
+                return true;
+            } catch (Exception $e) {
+                if (strpos($e->getMessage(), 'Deadlock detected') !== false && $tryCount == 3) {
+                    throw $e;
+                }
+
+                sleep(10);
+            }
+        }
     }
 
     public function checkWhatSheetsIsNotEmpty() {
@@ -433,16 +570,19 @@ class File extends base\File
         return $this->setting->settingsSheets[0]->getSettings();
     }
 
-    public function deleteRelatedRecords() {
-        return \yii::$app->getModule('import')->deleteRelatedRecords($this);
-    }
-
     public function getLogsGrouped()
     {
         $result = parent::getLogs(); // TODO: Change the autogenerated stub
         $result->modelClass = LogGrouped::className();
 
-        return $result;
+        return $result->select([
+            'message',
+            'category',
+            'logsCount' => new Expression('count(category)'),
+            ])->groupBy([
+                'message',
+                'category',
+            ])->orderBy('logsCount DESC');
     }
 
     public function getLogs()

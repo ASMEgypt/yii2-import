@@ -24,6 +24,7 @@ class LogGrouped extends Log
             'category',
         ]);
         $q->orderBy('logsCount DESC');
+
         return $dataProvider;
     }
 

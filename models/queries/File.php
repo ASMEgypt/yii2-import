@@ -3,6 +3,7 @@
 namespace execut\import\models\queries;
 
 use execut\import\models;
+use yii\base\Exception;
 use yii\db\ActiveQuery;
 use yii\db\Expression;
 use yii\web\UploadedFile;
@@ -51,6 +52,12 @@ class File extends ActiveQuery
         $keys = [models\FilesStatuse::RELOAD, models\FilesStatuse::NEW];
 
         return $this->byImportFilesStatuseId(models\FilesStatuse::find()->byKey($keys)->select('id'));
+    }
+
+    public function byMd5($md5) {
+        return $this->andWhere([
+            'md5' => $md5,
+        ]);
     }
 
     public function isStop() {
@@ -125,6 +132,37 @@ class File extends ActiveQuery
     public function byId($id) {
         return $this->andWhere([
             'id' => $id,
+        ]);
+    }
+
+    public function byHostName($name) {
+        return $this;
+    }
+
+    protected function getPhpProcessesIds() {
+        exec('pidof php', $output);
+        if (empty($output[0])) {
+            return [];
+        }
+
+        return explode(' ', $output[0]);
+    }
+
+    public function isWithoutProcess() {
+        $processesIds = $this->getPhpProcessesIds();
+        return $this->andWhere([
+            'NOT IN',
+            'process_id',
+            $processesIds
+        ]);
+    }
+
+    public function isInProgress() {
+        return $this->andWhere([
+            'import_files_statuse_id' => models\FilesStatuse::find()->byKey([
+                models\FilesStatuse::DELETING,
+                models\FilesStatuse::LOADING,
+            ])->select('id')
         ]);
     }
 }

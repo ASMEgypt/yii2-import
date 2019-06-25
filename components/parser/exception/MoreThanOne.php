@@ -1,10 +1,4 @@
 <?php
-/**
- * User: execut
- * Date: 05.08.16
- * Time: 9:10
- */
-
 namespace execut\import\components\parser\exception;
 
 

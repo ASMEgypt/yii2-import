@@ -34,7 +34,7 @@ class Module extends \yii\base\Module implements Plugin
         return $this->getPluginsResults(__FUNCTION__);
     }
 
-    public function deleteRelatedRecords(File $importFile) {
+    public function getOldIdsByFile(File $importFile) {
         return $this->getPluginsResults(__FUNCTION__, false, func_get_args());
     }
 

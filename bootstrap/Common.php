@@ -1,11 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: execut
- * Date: 12/20/17
- * Time: 11:51 AM
- */
-
 namespace execut\import\bootstrap;
 
 

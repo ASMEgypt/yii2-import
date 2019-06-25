@@ -15,4 +15,16 @@ class SettingsValue extends ActiveQuery
     public function byImportFileId($id) {
         return $this->byImportSettingsSetId(models\SettingsSet::find()->byImportFileId($id)->select('id'));
     }
+
+    public function byImportSettingsSetId($id) {
+        return $this->andWhere([
+            'import_settings_set_id' => $id,
+        ]);
+    }
+
+    public function byType($value) {
+        return $this->andWhere([
+            'type' => $value,
+        ]);
+    }
 }
