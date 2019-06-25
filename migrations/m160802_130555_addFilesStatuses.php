@@ -1,5 +1,5 @@
 <?php
-
+namespace execut\import\migrations;
 class m160802_130555_addFilesStatuses extends \execut\yii\migration\Migration
 {
     // Use safeUp/safeDown to run migration code within a transaction

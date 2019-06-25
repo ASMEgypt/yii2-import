@@ -1,4 +1,5 @@
 <?php
+namespace execut\import\migrations;
 class m160713_140416_addImportFilesTable extends \execut\yii\migration\Migration
 {
     public function initInverter(\execut\yii\migration\Inverter $i)

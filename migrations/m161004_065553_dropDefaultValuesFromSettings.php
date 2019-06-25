@@ -1,4 +1,5 @@
 <?php
+namespace execut\import\migrations;
 class m161004_065553_dropDefaultValuesFromSettings extends \execut\yii\migration\Migration
 {
     // Use safeUp/safeDown to run migration code within a transaction

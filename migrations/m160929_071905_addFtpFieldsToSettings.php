@@ -1,4 +1,5 @@
 <?php
+namespace execut\import\migrations;
 class m160929_071905_addFtpFieldsToSettings extends \execut\yii\migration\Migration
 {
     public function initInverter(\execut\yii\migration\Inverter $i)

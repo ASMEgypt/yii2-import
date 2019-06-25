@@ -1,5 +1,5 @@
 <?php
-
+namespace execut\import\migrations;
 class m160719_135347_addSettingsTables extends \execut\yii\migration\Migration
 {
     public function initInverter(\execut\yii\migration\Inverter $i)
