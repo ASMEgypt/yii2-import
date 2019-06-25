@@ -1,5 +1,4 @@
 <?php
-
 use execut\yii\migration\Migration;
 
 /**

@@ -23,8 +23,10 @@ to the ```require``` section of your `composer.json` file.
 
 ### Configuration
 
-Add module bootstrap in target web application config:
+Add module bootstrap and application language in target web application config:
 ```php
+    ...
+    'language' => 'ru',
     'bootstrap' => [
     ...
         'import' => [
@@ -43,6 +45,11 @@ Add module bootstrap in console application config:
         ]
     ...
     ],
+```
+
+For activate i18n translation set you application language in  config:
+```php
+
 ```
 
 Apply migrations via yii command:
@@ -129,5 +136,98 @@ For more information about execut/yii2-navigation module, please read it [docume
 
 #### Создание плагинов
 
+##### Создание простых записей
 Для изучения принципа создания плагина, рассмотрим простой пример. У нас есть товар. У товара есть название и цена.
 Нам нужно импортировать этот товар в базу данных каталога.
+Применим миграции примера:
+```ssh
+./yii migrate/up --migrationPath=vendor/execut/yii2-import/example/migrations
+```
+
+Подключим плагин простого плагина через конфигурационные файлы двух приложений консольного и web, в тех строках, что мы
+задавали раннее для запуска модуля:
+```php
+                'import' => [
+//'class' => \execut\import\bootstrap\Console::class,
+                    'depends' => [
+                        'modules' => [
+                            'import' => [
+                                'plugins' => [
+                                    'simple' => [
+                                        'class' => \detalika\base\plugins\import\Catalog::class,
+                                    ],
+                                ],
+                            ],
+                        ],
+                    ],
+                ],
+```
+
+После этого в админке настроек импорта появляется возможность задавать настройки для ипорта товаров с
+двумя полями: названием и ценой.
+Перейдём по адресу import/settings и создадим в этой админке настройку со следующими полями:
+
+1. Название: Простой товар
+1. Пропустить строк: 1
+1. Кодировка файла: UTF-8
+1. Источник захвата файла: Вручню
+1. Листы
+   1. Название: Первый лист
+       1. Тип: Product
+           1. Тип: Product name, Колонка: 1
+           1. Тип: Product price, Колонка: 2
+
+![Sheet example](docs/sheet.jpg)
+
+В результате мы настроили возможность загружать файл, расположенный внутри папки компонента: example/data/products.gnumeric
+Попробуем его загрузить через админку файлов импорта import/files, выбрав следующие значения полей:
+1. Файл: выбираем файл example/data/products.gnumeric
+1. Настройки: выбираем раннее созданную настройку "Простой товар"
+1. Источник захвата файла: Вручную
+
+И пробуем этот файл загрузить в базу через консольную команду:
+```bash
+> ./yii import
+Start check failed files
+End check failed files
+Start parse file #1 products.gnumeric
+start extract example_product_id
+start construct where example_product_id
+end construct where example_product_id after 0.0058150291442871 seconds
+start find example_product_id
+end find example_product_id after 0.014003992080688 seconds
+start keys collect example_product_id
+end keys collect example_product_id after 4.0531158447266E-6 seconds
+start models collect example_product_id
+end models collect example_product_id after 0.24526405334473 seconds
+end extract example_product_id after 0.26518106460571 seconds
+Row #0: Saving example_products # a:2:{s:4:"name";s:1:"1";s:5:"price";s:9:"Product 1";} because they is created
+Row #1: Saving example_products # a:2:{s:4:"name";s:1:"2";s:5:"price";s:9:"Product 2";} because they is created
+Row #2: Saving example_products # a:2:{s:4:"name";s:1:"3";s:5:"price";s:9:"Product 3";} because they is created
+...
+```
+
+В результате импорта в таблице example_products должны появиться 2500 товаров
+
+##### Создание записей через связи
+
+Расширим пример выше, но, уже импортируя товар через артикулы. Для этого подключим другой плагин указанным выше образом:
+```
+execut\import\example\withRelations\Plugin
+```
+Этот плагин позволит загружать и синхронизировать товары по связке их артикул\производитель. Необходимо скорректировать
+созданную раннее настройку, указав 3 и 5 столбец как Article и Brand соответственно.
+После этого указываем статус файла "Перезагрузить" и загружаем его вновь:
+```bash
+> ./yii import
+```
+
+После этого должны появиться 2 производителя, 2500 их артикулов и 2500 товаров с ними.
+Если попробовать вновь загрузить файл, то ничего не должно измениться в БД, поскольку изменений в файле не было.
+
+##### Усложненный поиск записей
+
+Есть возможность усложнить поиск записей, если, например, в файлах один и тот-же производитель может называться по разному.
+Для этого модели производителя необходимо наследовать интерфейс execut\import\ModelInterface и вычислить в нём все
+возможные варианты названия активного производителя, а в объекте запроса ActiveQuery для этой модели унаследовать
+execut\import\Query и в нём задать новый способ поиска.

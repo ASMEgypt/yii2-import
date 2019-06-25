@@ -14,19 +14,19 @@ use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveRecord;
 use yii\db\Expression;
 
-class Brand extends ActiveRecord implements ModelInterface
+class Brand extends ActiveRecord // implements ModelInterface
 {
-    public function getImportUniqueKeys($attributesNames)
-    {
-        $uniqueKeys = [
-            serialize(['name' => $this->name]),
-        ];
-        foreach ($this->aliases as $alias) {
-            $uniqueKeys[] = serialize(['name' => $alias->name]);
-        }
-
-        return $uniqueKeys;
-    }
+//    public function getImportUniqueKeys($attributesNames)
+//    {
+//        $uniqueKeys = [
+//            serialize(['name' => $this->name]),
+//        ];
+//        foreach ($this->aliases as $alias) {
+//            $uniqueKeys[] = serialize(['name' => $alias->name]);
+//        }
+//
+//        return $uniqueKeys;
+//    }
 
     public static function find()
     {

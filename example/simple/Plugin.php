@@ -9,7 +9,7 @@
 namespace execut\import\example\simple;
 
 
-use execut\import\example\models\Product;
+use execut\import\example\models\ProductSimple;
 use execut\import\models\File;
 use execut\navigation\Component;
 
@@ -17,7 +17,7 @@ class Plugin implements \execut\import\Plugin
 {
     public function getDictionaries() {
         return [
-            'example_product_id' => Product::find()
+            'example_product_id' => ProductSimple::find()
         ];
     }
 
@@ -30,22 +30,18 @@ class Plugin implements \execut\import\Plugin
         $queries = $this->getDictionaries();
         return [
             'example_product_id' => [
-                'parsers' => [
-                    'example_product_id' => [
-                        'modelsFinder' => [
-                            'isUpdateAlways' => true,
-                            'isCreateNotExisted' => true,
-                            'query' => $queries['example_product_id'],
+                'example_product_id' => [
+                    'isImport' => true,
+                    'isDelete' => true,
+                    'query' => $queries['example_product_id'],
+                    'attributes' => [
+                        'name' => [
+                            'key' => 'name',
+                            'isFind' => true,
                         ],
-                        'attributes' => [
-                            'name' => [
-                                'key' => 'name',
-                                'isForSearchQuery' => true,
-                            ],
-                            'price' => [
-                                'key' => 'price',
-                                'isForSearchQuery' => false,
-                            ],
+                        'price' => [
+                            'key' => 'price',
+                            'isFind' => false,
                         ],
                     ],
                 ],
@@ -78,7 +74,9 @@ class Plugin implements \execut\import\Plugin
     /**
      * Удаляет привязанные к файлу импорта записи
      */
-    public function deleteRelatedRecords(File $importFile) {
+    public function getOldIdsByFile(File $importFile)
+    {
+        return ProductSimple::find()->select('id')->column();
     }
 
     public function getAllowedRoles() {
