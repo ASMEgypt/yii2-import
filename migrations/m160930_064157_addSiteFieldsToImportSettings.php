@@ -1,4 +1,5 @@
 <?php
+namespace execut\import\migrations;
 class m160930_064157_addSiteFieldsToImportSettings extends \execut\yii\migration\Migration
 {
     public function initInverter(\execut\yii\migration\Inverter $i)

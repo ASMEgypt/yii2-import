@@ -1,4 +1,5 @@
 <?php
+namespace execut\import\migrations;
 class m160901_104452_addDelimiterTypeToImport extends \execut\yii\migration\Migration
 {
     // Use safeUp/safeDown to run migration code within a transaction

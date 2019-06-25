@@ -1,4 +1,5 @@
 <?php
+namespace execut\import\migrations;
 /**
  * Class m171219_132916_dropOldColumns
  */

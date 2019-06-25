@@ -1,4 +1,5 @@
 <?php
+namespace execut\import\migrations;
 class m161220_070554_addMimeTypeToFiles extends \execut\yii\migration\Migration
 {
     public function initInverter(\execut\yii\migration\Inverter $i)

@@ -1,5 +1,5 @@
 <?php
-
+namespace execut\import\migrations;
 class m160808_130649_addCharToDelimiter extends \yii\db\Migration
 {
     public function safeUp()
