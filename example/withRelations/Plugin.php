@@ -10,6 +10,7 @@ namespace execut\import\example\withRelations;
 
 
 use execut\import\example\models\Article;
+use execut\import\example\models\Brand;
 use execut\import\example\models\Product;
 use execut\import\models\File;
 use execut\navigation\Component;
@@ -20,6 +21,7 @@ class Plugin implements \execut\import\Plugin
         return [
             'example_product_id' => Product::find(),
             'example_article_id' => Article::find(),
+            'example_brand_id' => Brand::find(),
         ];
     }
 
@@ -32,41 +34,49 @@ class Plugin implements \execut\import\Plugin
         $queries = $this->getDictionaries();
         return [
             'example_product_id' => [
-                'parsers' => [
-                    'example_article_id' => [
-                        'modelsFinder' => [
-                            'isUpdateAlways' => true,
-                            'isCreateNotExisted' => true,
-                            'query' => $queries['example_article_id'],
-                        ],
-                        'attributes' => [
-                            'article' => [
-                                'key' => 'article',
-                                'isForSearchQuery' => true,
-                            ],
-                        ],
-                    ],
-                    'example_product_id' => [
-                        'modelsFinder' => [
-                            'isUpdateAlways' => true,
-                            'isCreateNotExisted' => true,
-                            'query' => $queries['example_product_id'],
-                        ],
-                        'attributes' => [
-                            'name' => [
-                                'key' => 'name',
-                                'isForSearchQuery' => false,
-                            ],
-                            'price' => [
-                                'key' => 'price',
-                                'isForSearchQuery' => false,
-                            ],
+                'example_brand_id' => [
+                    'isNoUpdate' => true,
+                    'query' => $queries['example_brand_id'],
+                    'attributes' => [
+                        'name' => [
+                            'isFind' => true,
                         ],
                     ],
                 ],
-                'relations' => [
-                    'example_product_id' => [
-                        'example_article_id',
+                'example_article_id' => [
+                    'isImport' => true,
+                    'isNoUpdate' => true,
+                    'query' => $queries['example_article_id'],
+                    'attributes' => [
+                        'article' => [
+                            'key' => 'article',
+                            'isFind' => true,
+                        ],
+                        'example_brand_id' => [
+                            'isFind' => true,
+                        ],
+                    ],
+                ],
+                'example_product_id' => [
+                    'isImport' => true,
+                    'isDelete' => true,
+                    'query' => $queries['example_product_id'],
+                    'attributes' => [
+                        'name' => [
+                            'key' => 'name',
+                            'isFind' => false,
+                        ],
+                        'price' => [
+                            'key' => 'price',
+                            'isFind' => false,
+                        ],
+                        'price' => [
+                            'key' => 'price',
+                            'isFind' => false,
+                        ],
+                        'example_article_id' => [
+                            'isFind' => true,
+                        ],
                     ],
                 ],
             ],
@@ -94,6 +104,7 @@ class Plugin implements \execut\import\Plugin
             'example_product_id.price' => 'Product price',
             'example_product_id.name' => 'Product name',
             'example_article_id.article' => 'Article',
+            'example_brand_id.name' => 'Brand',
         ];
     }
 
@@ -108,6 +119,7 @@ class Plugin implements \execut\import\Plugin
                 'example_product_id.name',
                 'example_product_id.price',
                 'example_article_id.article',
+                'example_brand_id.name',
             ],
         ];
     }
@@ -134,48 +146,11 @@ class Plugin implements \execut\import\Plugin
     public function bootstrapNavigation(Component $navigation) {
     }
 
-//[
-//'example_product_id' => [
-//'query' => Product::find(),
-//'isImport' => true,
-//'attributes' => [
-//'name' => [
-//'isFind' => true,
-//'column' => 1,
-//],
-//'price' => [
-//'column' => 2,
-//],
-//'example_article_id' => [
-//'isFind' => true,
-//],
-//],
-//],
-//'example_article_id' => [
-//'query' => Article::find(),
-//'isImport' => false,
-//'attributes' => [
-//'article' => [
-//'isFind' => true,
-//'column' => 3,
-//],
-//'source' => [
-//'column' => 4,
-//],
-//'example_brand_id' => [
-//'isFind' => true,
-//],
-//],
-//],
-//'example_brand_id' => [
-//'isImport' => false,
-//'query' => Brand::find(),
-//'attributes' => [
-//'name' => [
-//'isFind' => true,
-//'column' => 5,
-//],
-//],
-//],
-//]
+    /**
+     * Удаляет привязанные к файлу импорта записи
+     */
+    public function getOldIdsByFile(File $importFile)
+    {
+        return Product::find()->select('id')->column();
+    }
 }
