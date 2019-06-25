@@ -154,7 +154,7 @@ For more information about execut/yii2-navigation module, please read it [docume
                             'import' => [
                                 'plugins' => [
                                     'simple' => [
-                                        'class' => \detalika\base\plugins\import\Catalog::class,
+                                        'class' => \execut\import\example\Plugin::class,
                                     ],
                                 ],
                             ],
