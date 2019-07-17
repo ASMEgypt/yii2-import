@@ -6,8 +6,10 @@ php:
 matrix:
   fast_finish: true
 
-# Disable x-debug to speed up things
-before_install: phpenv config-rm xdebug.ini
+before_install:
+  - sudo apt-get update
+  - sudo apt-get install -y unrar unzip
+  - phpenv config-rm xdebug.ini
 
 # Install packages those will be required during build
 before_script:
