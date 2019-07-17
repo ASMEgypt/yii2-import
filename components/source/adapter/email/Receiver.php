@@ -21,6 +21,7 @@ class Receiver extends Component
      * @var Imap
      */
     public $imap = null;
+    public $now = null;
     protected $searchCriteria = null;
     protected $mails;
 
@@ -30,11 +31,19 @@ class Receiver extends Component
 
     public function getSearchCriteria() {
         if ($this->searchCriteria === null) {
-            return 'UNSEEN SINCE "' . date('d F Y', time() - 3600 * 24 * 10) . '"';
+            return 'UNSEEN SINCE "' . $this->getNow() . '"';
         }
 
         return $this->searchCriteria;
     }
+
+    protected function getNow() {
+        if ($this->now !== null) {
+            return $this->now;
+        }
+        return date('d F Y', time() - 3600 * 24 * 10);
+    }
+
     protected function _getMails() {
         if ($this->mails !== null) {
             return $this->mails;

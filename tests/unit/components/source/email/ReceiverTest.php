@@ -23,15 +23,17 @@ class ReceiverTest extends TestCase
             'searchMailBox',
             'getMail',
         ])->getMock();
-        $imap->method('searchMailBox')->with('UNSEEN SINCE "' . date('d F Y') . '"')->willReturn([
+        $now = date('d F Y');
+        $imap->method('searchMailBox')->with('UNSEEN SINCE "' . $now . '"')->willReturn([
             1,
         ]);
-        $imap->expects($this->once())->method('searchMailBox')->with('UNSEEN SINCE "' . date('d F Y') . '"')->willReturn([]);
+        $imap->expects($this->once())->method('searchMailBox')->with('UNSEEN SINCE "' . $now . '"')->willReturn([]);
 
         $imap->expects($this->once())->method('getMail')->with(1, false)->willReturn(new IncomingMail());
 
         $receiver = new Receiver([
             'imap' => $imap,
+            'now' => $now,
         ]);
         $receiver->getMails();
         $result = $receiver->getMails();

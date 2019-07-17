@@ -36,7 +36,8 @@ class ToArrayConverter extends Component
         }
 
         if ($this->mimeType === 'application/x-rar' || ($this->mimeType === null && mime_content_type($file) === 'application/x-rar')) {
-            $unpackedFile = tempnam('/tmp', 'test_');
+            exec('unrar lb "' . $file . '"', $out);
+            $unpackedFile = tempnam('/tmp', 'test_') . $out[0];
             exec('unrar p -inul "' . $file . '" > ' . $unpackedFile);
             if ($isUnlinkFile) {
                 unlink($file);

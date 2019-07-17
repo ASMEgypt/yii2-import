@@ -67,8 +67,7 @@ class Stack extends Component
         }
 
         if ($model->isNewRecord || $parser->modelsFinder->isUpdateAlways) {
-            echo 'Save' . "\n";
-//            $model->save(false);
+            $model->save(false);
         }
 
         return $this->results[$parserKey] = $model;

@@ -81,7 +81,7 @@ class ModelsFinderTest extends TestCase
                 ]),
             ],
         ]);
-        $this->setExpectedException(MoreThanOne::class);
+        $this->expectException(MoreThanOne::class);
         $finder->findModel();
     }
 
@@ -97,7 +97,7 @@ class ModelsFinderTest extends TestCase
                 ]),
             ],
         ]);
-        $this->setExpectedException(NotFoundRecord::class);
+        $this->expectException(NotFoundRecord::class);
         $finder->findModel();
     }
 

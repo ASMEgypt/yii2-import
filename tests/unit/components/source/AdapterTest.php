@@ -12,10 +12,10 @@ use execut\import\tests\TestCase;
 
 class AdapterTest extends TestCase
 {
-    public function actionTestCreateFile() {
+    public function testCreateFile() {
         $adapter = $this->getMockForAbstractClass(Adapter::class);
         $file = $adapter->createFile('test');
         $this->assertEquals('test', $file->fileName);
-        $this->assertTrue(preg_match('/\/tmp\/\d+_test/', $file->fileName) === 1);
+        $this->assertTrue(preg_match('/\/tmp\/\d+_test/', $file->filePath) === 1);
     }
 }

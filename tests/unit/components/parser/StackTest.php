@@ -61,7 +61,7 @@ class StackTest extends TestCase
         $result = array_values($result);
         $this->assertCount(2, $result);
         $this->assertNull($result[0]->relation_id);
-        $this->assertFalse($result[0]->runWithValidation);
+        $this->assertFalse($result[0]->runWithValidation, 'Save is not fired with run validation');
         $this->assertEquals(2, $result[1]->relation_id);
 
         $this->assertEquals($parser1->stack, $stack);
