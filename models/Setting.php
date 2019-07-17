@@ -119,6 +119,9 @@ class Setting extends ActiveRecord
                     'email_title_match' => [
                         'attribute'=> 'email_title_match',
                     ],
+                    'email_attachment_template' => [
+                        'attribute' => 'email_attachment_template',
+                    ],
                     'import_files_encoding_id' => [
                         'class' => DropDown::class,
                         'attribute' => 'import_files_encoding_id',
@@ -200,7 +203,7 @@ class Setting extends ActiveRecord
                 'plugins' => \yii::$app->getModule('import')->getSettingsCrudFieldsPlugins(),
             ],
             'date' => [
-                'class' => TimestampBehavior::className(),
+                'class' => TimestampBehavior::class,
                 'createdAtAttribute' => 'created',
                 'updatedAtAttribute' => 'updated',
                 'value' => new Expression('NOW()'),
@@ -245,7 +248,7 @@ class Setting extends ActiveRecord
      */
     public function getFiles()
     {
-        return $this->hasMany(\execut\import\models\File::className(), ['import_setting_id' => 'id'])->inverseOf('importSetting');
+        return $this->hasMany(\execut\import\models\File::class, ['import_setting_id' => 'id'])->inverseOf('importSetting');
     }
 
     /**
@@ -253,7 +256,7 @@ class Setting extends ActiveRecord
      */
     public function getFilesEncoding()
     {
-        return $this->hasOne(\execut\import\models\FilesEncoding::className(), ['id' => 'import_files_encoding_id'])->inverseOf('settings');
+        return $this->hasOne(\execut\import\models\FilesEncoding::class, ['id' => 'import_files_encoding_id'])->inverseOf('settings');
     }
 
     /**
@@ -261,7 +264,7 @@ class Setting extends ActiveRecord
      */
     public function getFilesSource()
     {
-        return $this->hasOne(\execut\import\models\FilesSource::className(), ['id' => 'import_files_source_id'])->inverseOf('settings');
+        return $this->hasOne(\execut\import\models\FilesSource::class, ['id' => 'import_files_source_id'])->inverseOf('settings');
     }
 
     /**
@@ -269,6 +272,6 @@ class Setting extends ActiveRecord
      */
     public function getSettingsSheets()
     {
-        return $this->hasMany(\execut\import\models\SettingsSheet::className(), ['import_setting_id' => 'id'])->inverseOf('setting');
+        return $this->hasMany(\execut\import\models\SettingsSheet::class, ['import_setting_id' => 'id'])->inverseOf('setting');
     }
 }

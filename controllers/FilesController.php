@@ -23,7 +23,7 @@ class FilesController extends Controller
     {
         return array_merge([
             'access' => [
-                'class' => AccessControl::className(),
+                'class' => AccessControl::class,
                 'rules' => [
                     [
                         'allow' => true,
@@ -73,9 +73,9 @@ class FilesController extends Controller
                 ],
             ],
             'download' => [
-                'class' => Action::className(),
+                'class' => Action::class,
                 'adapter' => [
-                    'class' => FileAdapter::className(),
+                    'class' => FileAdapter::class,
                     'modelClass' => File::class,
                     'extensionIsRequired' => false,
                     'dataAttribute' => 'content',

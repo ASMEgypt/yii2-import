@@ -70,7 +70,7 @@ class SettingsSheet extends base\SettingsSheet
                 'plugins' => \yii::$app->getModule('import')->getSettingsSheetsCrudFieldsPlugins(),
             ],
             'date' => [
-                'class' => TimestampBehavior::className(),
+                'class' => TimestampBehavior::class,
                 'createdAtAttribute' => 'created',
                 'updatedAtAttribute' => 'updated',
                 'value' => new Expression('NOW()'),

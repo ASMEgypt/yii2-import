@@ -45,7 +45,7 @@ class FilesSource extends ActiveRecord
      */
     public function getFiles()
     {
-        return $this->hasMany(\execut\import\models\File::className(), ['import_files_source_id' => 'id'])->inverseOf('filesSource');
+        return $this->hasMany(\execut\import\models\File::class, ['import_files_source_id' => 'id'])->inverseOf('filesSource');
     }
 
     /**
@@ -53,6 +53,6 @@ class FilesSource extends ActiveRecord
      */
     public function getSettings()
     {
-        return $this->hasMany(\execut\import\models\Setting::className(), ['import_files_source_id' => 'id'])->inverseOf('filesSource');
+        return $this->hasMany(\execut\import\models\Setting::class, ['import_files_source_id' => 'id'])->inverseOf('filesSource');
     }
 }

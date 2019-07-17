@@ -46,8 +46,8 @@ class Log extends ActiveRecord
             [['level', 'row_nbr', 'column_nbr', 'import_file_id', 'import_settings_value_id'], 'integer'],
             [['message'], 'string'],
             [['category', 'prefix', 'value'], 'string', 'max' => 255],
-            [['import_file_id'], 'exist', 'skipOnError' => true, 'targetClass' => File::className(), 'targetAttribute' => ['import_file_id' => 'id']],
-            [['import_settings_value_id'], 'exist', 'skipOnError' => true, 'targetClass' => SettingsValue::className(), 'targetAttribute' => ['import_settings_value_id' => 'id']],
+            [['import_file_id'], 'exist', 'skipOnError' => true, 'targetClass' => File::class, 'targetAttribute' => ['import_file_id' => 'id']],
+            [['import_settings_value_id'], 'exist', 'skipOnError' => true, 'targetClass' => SettingsValue::class, 'targetAttribute' => ['import_settings_value_id' => 'id']],
         ]);
     }
 
@@ -56,7 +56,7 @@ class Log extends ActiveRecord
      */
     public function getFile()
     {
-        return $this->hasOne(\execut\import\models\File::className(), ['id' => 'import_file_id'])->inverseOf('logs');
+        return $this->hasOne(\execut\import\models\File::class, ['id' => 'import_file_id'])->inverseOf('logs');
     }
 
     /**
@@ -64,6 +64,6 @@ class Log extends ActiveRecord
      */
     public function getSettingsValue()
     {
-        return $this->hasOne(\execut\import\models\SettingsValue::className(), ['id' => 'import_settings_value_id'])->inverseOf('logs');
+        return $this->hasOne(\execut\import\models\SettingsValue::class, ['id' => 'import_settings_value_id'])->inverseOf('logs');
     }
 }

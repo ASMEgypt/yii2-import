@@ -43,7 +43,7 @@ class SettingsValue extends ActiveRecord
 //            [['type', 'import_settings_set_id'], 'required'],
 //            [['import_settings_set_id'], 'integer'],
 //            [['type', 'column_nbr', 'format', 'value_string', 'value_option', 'number_delimiter'], 'string', 'max' => 255],
-//            [['import_settings_set_id'], 'exist', 'skipOnError' => true, 'targetClass' => SettingsSet::className(), 'targetAttribute' => ['import_settings_set_id' => 'id']],
+//            [['import_settings_set_id'], 'exist', 'skipOnError' => true, 'targetClass' => SettingsSet::class, 'targetAttribute' => ['import_settings_set_id' => 'id']],
 //        ]);
 //    }
 
@@ -52,7 +52,7 @@ class SettingsValue extends ActiveRecord
      */
     public function getLogs()
     {
-        return $this->hasMany(\execut\import\models\Log::className(), ['import_settings_value_id' => 'id'])->inverseOf('settingsValue');
+        return $this->hasMany(\execut\import\models\Log::class, ['import_settings_value_id' => 'id'])->inverseOf('settingsValue');
     }
 
     /**
@@ -60,6 +60,6 @@ class SettingsValue extends ActiveRecord
      */
     public function getSettingsSet()
     {
-        return $this->hasOne(\execut\import\models\SettingsSet::className(), ['id' => 'import_settings_set_id'])->inverseOf('settingsValues');
+        return $this->hasOne(\execut\import\models\SettingsSet::class, ['id' => 'import_settings_set_id'])->inverseOf('settingsValues');
     }
 }

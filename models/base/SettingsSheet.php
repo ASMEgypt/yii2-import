@@ -39,7 +39,7 @@ class SettingsSheet extends ActiveRecord
 //            [['name', 'order', 'import_setting_id'], 'required'],
 //            [['order', 'import_setting_id'], 'integer'],
 //            [['name'], 'string', 'max' => 255],
-//            [['import_setting_id'], 'exist', 'skipOnError' => true, 'targetClass' => Setting::className(), 'targetAttribute' => ['import_setting_id' => 'id']],
+//            [['import_setting_id'], 'exist', 'skipOnError' => true, 'targetClass' => Setting::class, 'targetAttribute' => ['import_setting_id' => 'id']],
 //        ]);
 //    }
 
@@ -48,7 +48,7 @@ class SettingsSheet extends ActiveRecord
      */
     public function getSettingsSets()
     {
-        return $this->hasMany(\execut\import\models\SettingsSet::className(), ['import_settings_sheet_id' => 'id'])->inverseOf('settingsSheet');
+        return $this->hasMany(\execut\import\models\SettingsSet::class, ['import_settings_sheet_id' => 'id'])->inverseOf('settingsSheet');
     }
 
     /**
@@ -56,6 +56,6 @@ class SettingsSheet extends ActiveRecord
      */
     public function getSetting()
     {
-        return $this->hasOne(\execut\import\models\Setting::className(), ['id' => 'import_setting_id'])->inverseOf('settingsSheets');
+        return $this->hasOne(\execut\import\models\Setting::class, ['id' => 'import_setting_id'])->inverseOf('settingsSheets');
     }
 }

@@ -19,14 +19,14 @@ class NotFoundRecordTest extends TestCase
             'otherName' => 'value2'
         ];
 
-        $exception->modelClass = NotFoundRecordTestModel::className();
+        $exception->modelClass = NotFoundRecordTestModel::class;
         $this->assertEquals(NotFoundRecordTestModel::class . ' with attributes name=value, otherName=value2 not found', $exception->getLogMessage());
     }
 
     public function testGetLogCategory() {
         $exception = new NotFoundRecord();
 
-        $exception->modelClass = NotFoundRecordTestModel::className();
+        $exception->modelClass = NotFoundRecordTestModel::class;
         $this->assertEquals('import.recordNotFound.' . NotFoundRecordTestModel::class, $exception->getLogCategory());
     }
 }

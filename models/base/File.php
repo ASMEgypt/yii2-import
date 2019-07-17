@@ -55,10 +55,10 @@ class File extends ActiveRecord
             [['import_files_source_id', 'use_id', 'import_files_statuse_id', 'import_setting_id', 'rows_count', 'rows_errors', 'rows_success'], 'integer'],
             [['name', 'extension', 'mime_type'], 'string', 'max' => 255],
             [['md5'], 'string', 'max' => 64],
-            [['import_files_source_id'], 'exist', 'skipOnError' => true, 'targetClass' => FilesSource::className(), 'targetAttribute' => ['import_files_source_id' => 'id']],
-            [['import_files_statuse_id'], 'exist', 'skipOnError' => true, 'targetClass' => FilesStatuse::className(), 'targetAttribute' => ['import_files_statuse_id' => 'id']],
-            [['import_setting_id'], 'exist', 'skipOnError' => true, 'targetClass' => Setting::className(), 'targetAttribute' => ['import_setting_id' => 'id']],
-            [['use_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::className(), 'targetAttribute' => ['use_id' => 'id']],
+            [['import_files_source_id'], 'exist', 'skipOnError' => true, 'targetClass' => FilesSource::class, 'targetAttribute' => ['import_files_source_id' => 'id']],
+            [['import_files_statuse_id'], 'exist', 'skipOnError' => true, 'targetClass' => FilesStatuse::class, 'targetAttribute' => ['import_files_statuse_id' => 'id']],
+            [['import_setting_id'], 'exist', 'skipOnError' => true, 'targetClass' => Setting::class, 'targetAttribute' => ['import_setting_id' => 'id']],
+            [['use_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::class, 'targetAttribute' => ['use_id' => 'id']],
         ]);
     }
 
@@ -67,7 +67,7 @@ class File extends ActiveRecord
      */
     public function getSource()
     {
-        return $this->hasOne(\execut\import\models\FilesSource::className(), ['id' => 'import_files_source_id'])->inverseOf('files');
+        return $this->hasOne(\execut\import\models\FilesSource::class, ['id' => 'import_files_source_id'])->inverseOf('files');
     }
 
     /**
@@ -75,7 +75,7 @@ class File extends ActiveRecord
      */
     public function getStatuse()
     {
-        return $this->hasOne(\execut\import\models\FilesStatuse::className(), ['id' => 'import_files_statuse_id'])->inverseOf('files');
+        return $this->hasOne(\execut\import\models\FilesStatuse::class, ['id' => 'import_files_statuse_id'])->inverseOf('files');
     }
 
     /**
@@ -83,7 +83,7 @@ class File extends ActiveRecord
      */
     public function getSetting()
     {
-        return $this->hasOne(\execut\import\models\Setting::className(), ['id' => 'import_setting_id'])->inverseOf('files');
+        return $this->hasOne(\execut\import\models\Setting::class, ['id' => 'import_setting_id'])->inverseOf('files');
     }
 
     /**
@@ -91,7 +91,7 @@ class File extends ActiveRecord
      */
     public function getUse()
     {
-        return $this->hasOne(\execut\import\models\User::className(), ['id' => 'use_id'])->inverseOf('files');
+        return $this->hasOne(\execut\import\models\User::class, ['id' => 'use_id'])->inverseOf('files');
     }
 
     /**
@@ -99,6 +99,6 @@ class File extends ActiveRecord
      */
     public function getLogs()
     {
-        return $this->hasMany(\execut\import\models\Log::className(), ['import_file_id' => 'id'])->inverseOf('file');
+        return $this->hasMany(\execut\import\models\Log::class, ['import_file_id' => 'id'])->inverseOf('file');
     }
 }

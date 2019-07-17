@@ -28,7 +28,7 @@ class ParserTest extends TestCase
         $attributes = $parser->attributes;
         $this->assertArrayHasKey('name', $attributes);
         $attribute = $attributes['name'];
-        $this->assertInstanceOf(Attribute::className(), $attribute);
+        $this->assertInstanceOf(Attribute::class, $attribute);
         $this->assertEquals('name', $attribute->key);
     }
 
@@ -55,7 +55,7 @@ class ParserTest extends TestCase
         ]);
         $parser = new Parser([
             'modelsFinder' => $modelsFinder,
-            'data' => [
+            'row' => [
                 [
                     'value',
                 ],
@@ -95,7 +95,7 @@ class ParserTest extends TestCase
                 ],
             ],
         ]);
-        $this->setExpectedException(Validate::class);
+        $this->expectException(Validate::class);
         $parser->parse();
     }
 }

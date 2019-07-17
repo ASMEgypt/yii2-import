@@ -17,7 +17,7 @@ class SettingsValueExtractorTest extends TestCase
         $settingsValue = new ImportSettingsValuesTest();
         $settingsValue->type = 'test_id.attributeKey';
         $settingsValue->number_delimiter = '.';
-        $settingsValue->column_nbr = 1;
+        $settingsValue->column_nbr = 0;
 
         $extractor = new SettingsValueExtractor([
             'model' => $settingsValue,

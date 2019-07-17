@@ -17,7 +17,7 @@ use yii\db\ActiveRecord;
 class StackTest extends TestCase
 {
     public function testSetRow() {
-        $parser = $this->getMockBuilder(Parser::className())->setMethods(['parse'])->getMock();
+        $parser = $this->getMockBuilder(Parser::class)->setMethods(['parse'])->getMock();
         $stack = new Stack([
             'parsers' => [
                 $parser,
@@ -34,13 +34,13 @@ class StackTest extends TestCase
 
     public function testParse() {
         $testModel1 = new StackTestModel();
-        $parser1 = $this->getMockBuilder(Parser::className())->setMethods(['parse'])->getMock();
+        $parser1 = $this->getMockBuilder(Parser::class)->setMethods(['parse'])->getMock();
         $parser1->method('parse')->willReturn(new Result([
             'models' => [$testModel1]
         ]));
 
         $testModel2 = new StackTestModel();
-        $parser2 = $this->getMockBuilder(Parser::className())->setMethods(['parse'])->getMock();
+        $parser2 = $this->getMockBuilder(Parser::class)->setMethods(['parse'])->getMock();
         $parser2->method('parse')->willReturn(new Result([
             'models' => [$testModel2]
         ]));

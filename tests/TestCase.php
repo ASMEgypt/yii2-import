@@ -8,10 +8,7 @@
 
 namespace execut\import\tests;
 
-
-use Codeception\Test\Unit;
-
-class TestCase extends Unit
+class TestCase extends \PHPUnit\Framework\TestCase
 {
 
 }

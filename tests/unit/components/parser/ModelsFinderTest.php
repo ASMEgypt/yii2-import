@@ -21,12 +21,12 @@ use yii\db\ActiveRecord;
 
 class ModelsFinderTest extends TestCase
 {
-    public function setUp() {
+    protected function setUp(): void {
         parent::setUp();
         ModelsFinder::$cache = [];
     }
 
-    public function tearDown() {
+    protected function tearDown(): void {
         parent::tearDown();
         ModelsFinder::$cache = [];
     }

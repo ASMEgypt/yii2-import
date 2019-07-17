@@ -44,6 +44,6 @@ class FilesEncoding extends ActiveRecord
      */
     public function getSettings()
     {
-        return $this->hasMany(\execut\import\models\Setting::className(), ['import_files_encoding_id' => 'id'])->inverseOf('filesEncoding');
+        return $this->hasMany(\execut\import\models\Setting::class, ['import_files_encoding_id' => 'id'])->inverseOf('filesEncoding');
     }
 }

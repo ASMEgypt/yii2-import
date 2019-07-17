@@ -11,14 +11,15 @@ use execut\import\tests\TestCase;
 
 class ToArrayConverterTest extends TestCase
 {
-    public function setUp() {
+    protected $file = null;
+    protected function setUp(): void {
         parent::setUp();
-        $this->file = tempnam('/tmp', 'test_');
+        $this->file = tempnam('/tmp', 'test_') . '.csv';
         file_put_contents($this->file, '"test, test",test');
     }
 
-    public function tearDown() {
-        parent::setUp();
+    protected function tearDown(): void {
+        parent::tearDown();
         unlink($this->file);
     }
 
@@ -34,18 +35,17 @@ class ToArrayConverterTest extends TestCase
         $this->assertEquals([['test, test', 'test']], $toArrayConverter->convert());
     }
 
-    public function testCache() {
+//    public function testCache() {
 //        $toArrayConverter = new ToArrayConverter();
 //        $toArrayConverter->file = $this->file;
-//        $cache = $this->getMockBuilder(FileCache::className())->setMethods(['get'])->getMock();
+//        $cache = $this->getMockBuilder(FileCache::class)->setMethods(['get'])->getMock();
 //        $cache->expects($this->once())->method('get')->will($this->returnValue([['test']]));
 //        $toArrayConverter->cache = $cache;
 //        $this->assertEquals([['test']], $toArrayConverter->convert());
-    }
+//    }
 
     public function testConvertEncoding() {
         $result = \mb_convert_encoding('тест,тест', 'UTF-16', 'UTF-8');
-        $file = tempnam('/tmp', 'test_');
         file_put_contents($this->file, $result);
 
         $toArrayConverter = new ToArrayConverter([
@@ -113,6 +113,7 @@ class ToArrayConverterTest extends TestCase
         $filePath = __DIR__ . '/test.csv.rar';
         $toArrayConverter = new ToArrayConverter([
             'file' => fopen($filePath, 'r'),
+            'mimeType' => 'application/x-rar',
         ]);
 
         $this->assertEquals([['1']], $toArrayConverter->convert());

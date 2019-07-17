@@ -37,7 +37,7 @@ class Brand extends ActiveRecord // implements ModelInterface
     {
         return [
             'date' => [
-                'class' => TimestampBehavior::className(),
+                'class' => TimestampBehavior::class,
                 'createdAtAttribute' => 'created',
                 'updatedAtAttribute' => 'updated',
                 'value' => new Expression('NOW()'),

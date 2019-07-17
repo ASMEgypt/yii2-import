@@ -41,7 +41,7 @@ class Log extends \execut\import\models\base\Log
                 'plugins' => [],
             ],
             'date' => [
-                'class' => TimestampBehavior::className(),
+                'class' => TimestampBehavior::class,
                 'createdAtAttribute' => 'created',
                 'updatedAtAttribute' => 'updated',
                 'value' => new Expression('NOW()'),

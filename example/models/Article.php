@@ -19,7 +19,7 @@ class Article extends ActiveRecord
     {
         return [
             'date' => [
-                'class' => TimestampBehavior::className(),
+                'class' => TimestampBehavior::class,
                 'createdAtAttribute' => 'created',
                 'updatedAtAttribute' => 'updated',
                 'value' => new Expression('NOW()'),

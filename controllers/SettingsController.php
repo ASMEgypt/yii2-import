@@ -22,7 +22,7 @@ class SettingsController extends Controller
     {
         return array_merge([
             'access' => [
-                'class' => AccessControl::className(),
+                'class' => AccessControl::class,
                 'rules' => [
                     [
                         'allow' => true,
@@ -46,10 +46,10 @@ class SettingsController extends Controller
 
         return ArrayHelper::merge($crud->actions(), [
             'get-dictionaries' => [
-                'class' => Action::className(),
+                'class' => Action::class,
                 'adapter' => [
-                    'class' => GridView::className(),
-                    'model' => Dictionary::className(),
+                    'class' => GridView::class,
+                    'model' => Dictionary::class,
                     'view' => null,
                 ],
             ],

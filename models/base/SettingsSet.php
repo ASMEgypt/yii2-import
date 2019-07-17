@@ -39,7 +39,7 @@ class SettingsSet extends ActiveRecord
 //            [['type', 'import_settings_sheet_id'], 'required'],
 //            [['import_settings_sheet_id'], 'integer'],
 //            [['type'], 'string', 'max' => 255],
-//            [['import_settings_sheet_id'], 'exist', 'skipOnError' => true, 'targetClass' => SettingsSheet::className(), 'targetAttribute' => ['import_settings_sheet_id' => 'id']],
+//            [['import_settings_sheet_id'], 'exist', 'skipOnError' => true, 'targetClass' => SettingsSheet::class, 'targetAttribute' => ['import_settings_sheet_id' => 'id']],
 //        ]);
 //    }
 
@@ -48,7 +48,7 @@ class SettingsSet extends ActiveRecord
      */
     public function getSettingsSheet()
     {
-        return $this->hasOne(\execut\import\models\SettingsSheet::className(), ['id' => 'import_settings_sheet_id'])->inverseOf('settingsSets');
+        return $this->hasOne(\execut\import\models\SettingsSheet::class, ['id' => 'import_settings_sheet_id'])->inverseOf('settingsSets');
     }
 
     /**
@@ -56,6 +56,6 @@ class SettingsSet extends ActiveRecord
      */
     public function getSettingsValues()
     {
-        return $this->hasMany(\execut\import\models\SettingsValue::className(), ['import_settings_set_id' => 'id'])->inverseOf('settingsSet');
+        return $this->hasMany(\execut\import\models\SettingsValue::class, ['import_settings_set_id' => 'id'])->inverseOf('settingsSet');
     }
 }

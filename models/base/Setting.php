@@ -67,8 +67,8 @@ class Setting extends ActiveRecord
             [['ftp_ssl'], 'boolean'],
             [['name', 'email', 'email_title_match', 'csv_enclosure', 'csv_delimiter', 'ftp_host', 'ftp_login', 'ftp_password', 'ftp_dir', 'ftp_file_name', 'site_host', 'site_auth_url', 'site_auth_method', 'site_login_field', 'site_password_field', 'site_login', 'site_password', 'site_file_url'], 'string', 'max' => 255],
             [['site_other_fields'], 'string', 'max' => 1000],
-            [['import_files_encoding_id'], 'exist', 'skipOnError' => true, 'targetClass' => FilesEncoding::className(), 'targetAttribute' => ['import_files_encoding_id' => 'id']],
-            [['import_files_source_id'], 'exist', 'skipOnError' => true, 'targetClass' => FilesSource::className(), 'targetAttribute' => ['import_files_source_id' => 'id']],
+            [['import_files_encoding_id'], 'exist', 'skipOnError' => true, 'targetClass' => FilesEncoding::class, 'targetAttribute' => ['import_files_encoding_id' => 'id']],
+            [['import_files_source_id'], 'exist', 'skipOnError' => true, 'targetClass' => FilesSource::class, 'targetAttribute' => ['import_files_source_id' => 'id']],
         ]);
     }
 
@@ -77,7 +77,7 @@ class Setting extends ActiveRecord
      */
     public function getFiles()
     {
-        return $this->hasMany(\execut\import\models\File::className(), ['import_setting_id' => 'id'])->inverseOf('importSetting');
+        return $this->hasMany(\execut\import\models\File::class, ['import_setting_id' => 'id'])->inverseOf('importSetting');
     }
 
     /**
@@ -85,7 +85,7 @@ class Setting extends ActiveRecord
      */
     public function getFilesEncoding()
     {
-        return $this->hasOne(\execut\import\models\FilesEncoding::className(), ['id' => 'import_files_encoding_id'])->inverseOf('settings');
+        return $this->hasOne(\execut\import\models\FilesEncoding::class, ['id' => 'import_files_encoding_id'])->inverseOf('settings');
     }
 
     /**
@@ -93,7 +93,7 @@ class Setting extends ActiveRecord
      */
     public function getFilesSource()
     {
-        return $this->hasOne(\execut\import\models\FilesSource::className(), ['id' => 'import_files_source_id'])->inverseOf('settings');
+        return $this->hasOne(\execut\import\models\FilesSource::class, ['id' => 'import_files_source_id'])->inverseOf('settings');
     }
 
     /**
@@ -101,6 +101,6 @@ class Setting extends ActiveRecord
      */
     public function getSettingsSheets()
     {
-        return $this->hasMany(\execut\import\models\SettingsSheet::className(), ['import_setting_id' => 'id'])->inverseOf('setting');
+        return $this->hasMany(\execut\import\models\SettingsSheet::class, ['import_setting_id' => 'id'])->inverseOf('setting');
     }
 }

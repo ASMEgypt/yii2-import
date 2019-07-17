@@ -48,9 +48,9 @@ trait CodeGuyActions
      * ```php
      * <?php
      * $I->haveFixtures([
-     *     'posts' => PostsFixture::className(),
+     *     'posts' => PostsFixture::class,
      *     'user' => [
-     *         'class' => UserFixture::className(),
+     *         'class' => UserFixture::class,
      *         'dataFile' => '@tests/_data/models/user.php',
      *      ],
      * ]);
@@ -64,7 +64,7 @@ trait CodeGuyActions
      * public function _fixtures(){
      *     return [
      *         'user' => [
-     *             'class' => UserFixture::className(),
+     *             'class' => UserFixture::class,
      *             'dataFile' => codecept_data_dir() . 'user.php'
      *         ]
      *     ];
@@ -105,7 +105,7 @@ trait CodeGuyActions
      *
      * ```php
      * <?php
-     * $I->haveFixtures(['users' => UserFixture::className()]);
+     * $I->haveFixtures(['users' => UserFixture::class]);
      *
      * $users = $I->grabFixture('users');
      *

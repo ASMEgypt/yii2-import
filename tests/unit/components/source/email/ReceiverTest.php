@@ -19,7 +19,7 @@ use roopz\imap\IncomingMailAttachment;
 class ReceiverTest extends TestCase
 {
     public function testGetMails() {
-        $imap = $this->getMockBuilder(Imap::className())->setMethods([
+        $imap = $this->getMockBuilder(Imap::class)->setMethods([
             'searchMailBox',
             'getMail',
         ])->getMock();
@@ -56,7 +56,7 @@ class ReceiverTest extends TestCase
         ])->getMock();
         $filter->expects($this->once())->method('filtrate')->with($emails)->willReturn($emails);
 
-        $imap = $this->getMockBuilder(Imap::className())->setMethods([
+        $imap = $this->getMockBuilder(Imap::class)->setMethods([
             'markMailAsRead',
         ])->getMock();
         $imap->expects($this->once())->method('markMailAsRead')->with(1);
