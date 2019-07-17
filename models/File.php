@@ -523,7 +523,7 @@ class File extends base\File implements DynaGridRow
         $attributes['import_file_id'] = $this->id;
         $log = new Log($attributes);
         if (!$log->save()) {
-            var_dump($attributes);
+//            var_dump($attributes);
 //            exit;
         }
     }

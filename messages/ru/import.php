@@ -32,6 +32,7 @@ return [
     'Ignored Lines' => 'Пропустить строк',
     'Email' => 'Шаблон почты отправителя',
     'Email Title Match' => 'Шаблон темы письма',
+    'Email Attachment Template' => 'Шаблон названия вложенного файла',
     'Csv Enclosure' => 'Символ для окружения текста',
     'Csv Delimiter' => 'Символ разделителя столбцов',
     'Import Files Source' => 'Источник захвата файла',

@@ -39,8 +39,12 @@ class FilesSource extends base\FilesSource
                 }
 
                 $adapter = self::$emailAdapter;
+                /**
+                 * @var Filter $filter
+                 */
                 $filter = $adapter->receiver->filter;
                 $filter->subject = $setting->email_title_match;
+                $filter->attachmentName = $setting->email_attachment_template;
                 $filter->sender = $setting->email;
             break;
             case 'ftp':

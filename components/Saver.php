@@ -27,7 +27,7 @@ class Saver extends Component
 //            echo $model->id . ' is saved' . "\n";
             return $model;
         } else {
-            var_dump($model->errors);
+//            var_dump($model->errors);
         }
     }
 }

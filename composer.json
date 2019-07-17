@@ -25,5 +25,11 @@
     "psr-4": {
       "execut\\import\\": ""
     }
-  }
+  },
+  "repositories": [
+    {
+      "type": "composer",
+      "url": "https://asset-packagist.org"
+    }
+  ]
 }
