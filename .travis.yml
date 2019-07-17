@@ -15,9 +15,13 @@ before_script:
   - travis_retry composer self-update
   - travis_retry composer config minimum-stability dev
   - travis_retry composer install ${COMPOSER_FLAGS} --no-interaction --prefer-source
+  - |
+    if [ $TRAVIS_PHP_VERSION = '5.6' ]; then
+      PHPUNIT_FLAGS="--coverage-clover=coverage.clover"
+    fi
 
 script:
-  - composer test
+  - phpunit --verbose $PHPUNIT_FLAGS
 
 #after_script:
 
