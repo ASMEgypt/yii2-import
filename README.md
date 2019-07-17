@@ -1,5 +1,5 @@
 [![Latest Version](https://img.shields.io/packagist/v/execut/yii2-import.svg)](https://packagist.org/packages/execut/yii2-import)
-[![Build Status](https://img.shields.io/travis/execut/yii2-import/master.svg)](https://travis-ci.org/execut/yii2-import)
+[![Build Status](https://travis-ci.com/execut/yii2-import.svg?branch=master)](https://travis-ci.com/execut/yii2-import)
 [![Coverage Status](https://img.shields.io/coveralls/execut/yii2-import/master.svg)](https://coveralls.io/r/execut/yii2-import?branch=master)
 [![Scrutinizer Code Quality](https://img.shields.io/scrutinizer/g/execut/yii2-import.svg)](https://scrutinizer-ci.com/g/execut/yii2-import?branch=master)
 [![SensioLabsInsight](https://img.shields.io/sensiolabs/i/0d67ca33-5a72-46b8-b109-cfbf95673fce.svg)](https://insight.sensiolabs.com/projects/db48bc7b-66e9-492c-8848-fc6a52f133bd)
