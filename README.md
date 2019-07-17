@@ -1,6 +1,8 @@
 # yii2-import
 Yii2 module for import data from files to database between activeRecord
 
+Сompatible only with PostgreSQL
+
 ## Installation
 
 The preferred way to install this extension is through [composer](http://getcomposer.org/download/).
