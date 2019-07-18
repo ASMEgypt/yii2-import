@@ -23,7 +23,7 @@
     "guzzlehttp/guzzle": "*"
   },
   "require-dev" :   {
-    "satooshi/php-coveralls": "^2.1",
+    "php-coveralls/php-coveralls": "^2.1",
     "phpunit/phpunit": "^8.2",
     "phpunit/phpcov": "^6.0"
   },
