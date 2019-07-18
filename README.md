@@ -8,8 +8,6 @@
 # yii2-import
 Yii2 module for import data from files to database between activeRecord
 
-Сompatible only with PostgreSQL
-
 ## Installation
 
 The preferred way to install this extension is through [composer](http://getcomposer.org/download/).
@@ -231,7 +229,7 @@ execut\import\example\withRelations\Plugin
 > ./yii import
 ```
 
-После этого должны появиться 2 производителя, 2500 их артикулов и 2500 товаров с ними.
+После этого должны появиться 3 производителя, 2499 их артикулов и 2499 товаров с ними.
 Если попробовать вновь загрузить файл, то ничего не должно измениться в БД, поскольку изменений в файле не было.
 
 ##### Усложненный поиск записей

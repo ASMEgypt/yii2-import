@@ -12,7 +12,7 @@ class m160805_062054_addErrorStatus extends \execut\yii\migration\Migration
             [
                 9,
                 'error',
-                'Ошибка',
+                'Error',
             ]
         ]);
     }

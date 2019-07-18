@@ -6,6 +6,7 @@ use execut\import\models;
 use yii\base\Exception;
 use yii\db\ActiveQuery;
 use yii\db\Expression;
+use yii\db\mysql\Schema;
 use yii\web\UploadedFile;
 
 /**
@@ -85,7 +86,8 @@ class File extends ActiveQuery
             $this->select = ['*'];
         }
 
-        $this->select['errorsPercent'] = new Expression('CASE WHEN (rows_success is not null OR rows_errors is not null) AND (rows_success + rows_errors) > 0 THEN rows_errors::float / (rows_success + rows_errors) ELSE 0 END');
+        $typeCast = $this->getTypeCastFunction();
+        $this->select['errorsPercent'] = new Expression('CASE WHEN (rows_success is not null OR rows_errors is not null) AND (rows_success + rows_errors) > 0 THEN rows_errors' . $typeCast . '  / (rows_success + rows_errors) ELSE 0 END');
 
         return $this;
     }
@@ -95,15 +97,21 @@ class File extends ActiveQuery
             $this->select = ['*'];
         }
 
-        $this->select['progress'] = new Expression('CASE WHEN rows_count > 0 THEN (rows_success + rows_errors)::float / rows_count ELSE 0 END');
+        $typeCast = $this->getTypeCastFunction();
+        $this->select['progress'] = new Expression('CASE WHEN rows_count > 0 THEN (rows_success + rows_errors)' . $typeCast . ' / rows_count ELSE 0 END');
 
         return $this;
     }
 
     public function isOnlyFresh() {
-        $class = $this->modelClass;
+        $modelClass = $this->modelClass;
+        if ($modelClass::getDb()->schema instanceof Schema) {
+            $subQuery = 'SELECT id FROM ' . $this->getPrimaryTableName() . ' GROUP BY import_setting_id ORDER BY import_setting_id, created DESC';
+        } else {
+            $subQuery = 'SELECT DISTINCT ON (import_setting_id) id FROM ' . $this->getPrimaryTableName() . ' ORDER BY import_setting_id, created DESC';
+        }
 
-        return $this->andWhere($class::tableName() . '.id IN (SELECT DISTINCT ON (import_setting_id) id FROM import_files ORDER BY import_setting_id, created DESC)');
+        return $this->andWhere($this->getPrimaryTableName() . '.id IN (' . $subQuery . ')');
     }
 
     public function byEventsCount($count) {
@@ -162,7 +170,23 @@ class File extends ActiveQuery
             'import_files_statuse_id' => models\FilesStatuse::find()->byKey([
                 models\FilesStatuse::DELETING,
                 models\FilesStatuse::LOADING,
+                models\FilesStatuse::STOP,
             ])->select('id')
         ]);
+    }
+
+    /**
+     * @return string
+     */
+    protected function getTypeCastFunction()
+    {
+        $modelClass = $this->modelClass;
+        if ($modelClass::getDb()->schema instanceof Schema) {
+            $typeCast = '';
+        } else {
+            $typeCast = '::float';
+        }
+
+        return $typeCast;
     }
 }

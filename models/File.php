@@ -17,6 +17,7 @@ use execut\crudFields\fields\File as FileField;
 use yii\behaviors\TimestampBehavior;
 use yii\db\Exception;
 use yii\db\Expression;
+use yii\db\mysql\Schema;
 use yii\helpers\ArrayHelper;
 use yii\helpers\FileHelper;
 use yii\web\UploadedFile;
@@ -462,6 +463,13 @@ class File extends base\File implements DynaGridRow
         }
 
         $fileHandler = $this->content;
+        $isUnlink = false;
+        if (self::getDb()->schema instanceof Schema) {
+            $file = tempnam(sys_get_temp_dir(), 'import_');
+            file_put_contents($file, $fileHandler);
+            $fileHandler = $file;
+            $isUnlink = true;
+        }
 
         $setting = $this->setting;
         $mimeType = $this->detectMimeType();
@@ -483,6 +491,9 @@ class File extends base\File implements DynaGridRow
         $startFrom = $setting->ignored_lines;
 
         $data = array_splice($data, $startFrom);
+        if ($isUnlink) {
+            unlink($file);
+        }
 
         return $this->rows = $data;
     }

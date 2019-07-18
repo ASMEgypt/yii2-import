@@ -46,8 +46,6 @@ class m160801_142638_addEncodingsTable extends \execut\yii\migration\Migration
             ],
         ]);
         $i->table('import_settings')
-            ->addForeignColumn('import_files_encodings')
-            ->update(['import_files_encoding_id' => 1])
-            ->alterColumnSetNotNull('import_files_encoding_id');
+            ->addForeignColumn('import_files_encodings', true, 1);
     }
 }

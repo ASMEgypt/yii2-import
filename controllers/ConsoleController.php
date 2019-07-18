@@ -98,7 +98,7 @@ class ConsoleController extends Controller
         $this->waitForRelease();
         File::updateAll([
             'import_files_statuse_id' => FilesStatuse::find()->byKey(FilesStatuse::DELETE)->one()->id,
-        ], ['id' => $q]);
+        ], ['id' => $q->column()]);
 
         $c = $q->count();
 
