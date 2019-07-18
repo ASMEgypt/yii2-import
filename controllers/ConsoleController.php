@@ -11,6 +11,7 @@ namespace execut\import\controllers;
 use execut\import\components\Importer;
 use execut\import\components\parser\exception\Exception;
 use execut\import\components\parser\Stack;
+use execut\import\models\FilesSource;
 use execut\import\models\FilesStatuse;
 use execut\import\models\File;
 use execut\import\models\Log;
@@ -89,7 +90,7 @@ class ConsoleController extends Controller
         $this->release();
     }
 
-    public function deleteOldFilesBySetting($file) {
+    protected function deleteOldFilesBySetting($file) {
         $q = File::find()->byImportSettingId($file->import_setting_id)->andWhere([
             '<>',
             'id',
@@ -197,6 +198,7 @@ class ConsoleController extends Controller
             sleep(1);
         }
 
+        $this->stdout('Checking source type ' . $type . "\n");
         $q = Setting::find();
         if ($id !== null) {
             $q->andWhere(['id' => $id]);
@@ -244,7 +246,14 @@ class ConsoleController extends Controller
         $mutex->release($mutexKey);
     }
 
-    public function saveModel($model) {
+    public function actionCheckSourceDaemon($type = 'email') {
+        while (true) {
+            $this->actionCheckSource($type);
+            sleep(60 * 5);
+        }
+    }
+
+    protected function saveModel($model) {
         if ($model->save()) {
             $this->stdout('Model ' . $model . ' is saved' . "\n");
         } else {

@@ -25,9 +25,17 @@ use yii\helpers\ArrayHelper;
 class FilesSource extends base\FilesSource
 {
     protected static $emailAdapter = null;
+//    const ALL_TYPES = [
+//        self::TYPE_EMAIL,
+//        self::TYPE_FTP,
+//        self::TYPE_SITE,
+//    ];
+    const TYPE_EMAIL = 'email';
+    const TYPE_FTP = 'ftp';
+    const TYPE_SITE = 'site';
     public function getAdapterForSetting(Setting $setting) {
         switch ($this->key) {
-            case 'email':
+            case self::TYPE_EMAIL:
                 if (self::$emailAdapter === null) {
                     self::$emailAdapter = new Email([
                         'receiver' => new Receiver([
@@ -47,7 +55,7 @@ class FilesSource extends base\FilesSource
                 $filter->attachmentName = $setting->email_attachment_template;
                 $filter->sender = $setting->email;
             break;
-            case 'ftp':
+            case self::TYPE_FTP:
                 $adapter = new Ftp([
                     'host' => $setting->ftp_host,
                     'ssl' => $setting->ftp_ssl,
@@ -59,7 +67,7 @@ class FilesSource extends base\FilesSource
                     'fileName' => $setting->ftp_file_name,
                 ]);
             break;
-            case 'site':
+            case self::TYPE_SITE:
                 $adapter = new Site([
                     'site' => $setting->site_host,
                     'authUrl' => $setting->site_auth_url,
