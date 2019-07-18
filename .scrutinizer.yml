@@ -1,13 +1,16 @@
 build:
-  nodes:
-    analysis:
-      tests:
-        override:
-          - php-scrutinizer-run
-    dependencies:
-        # Runs before inferred commands
-        before:
-            - 'composer config minimum-stability dev'
+    nodes:
+        analysis:
+            environment:
+              php:
+                version: 7.2  # or any other released version
+            tests:
+                override:
+                    - php-scrutinizer-run
+            dependencies:
+                # Runs before inferred commands
+                before:
+                    - 'composer config minimum-stability dev'
 filter:
     excluded_paths: [tests/*]
 
