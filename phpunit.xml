@@ -6,13 +6,16 @@
          convertWarningsToExceptions="true"
          stopOnFailure="false">
     <testsuites>
-        <testsuite name="LHS Yii2 Save Relations Behavior Test Suite">
+        <testsuite name="eXeCUT Yii2 Import Test Suite">
             <directory>./tests</directory>
         </testsuite>
     </testsuites>
-    <!--<filter>-->
-        <!--<whitelist processUncoveredFilesFromWhitelist="true">-->
-            <!--<file>./src/SaveRelationsBehavior.php</file>-->
-        <!--</whitelist>-->
-    <!--</filter>-->
+    <logging>
+        <log type="coverage-clover" target="tests/_log/clover.xml"/>
+    </logging>
+    <filter>
+        <whitelist processUncoveredFilesFromWhitelist="true">
+            <directory suffix=".php">./components/</directory>
+        </whitelist>
+    </filter>
 </phpunit>
