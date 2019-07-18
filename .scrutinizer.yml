@@ -17,7 +17,7 @@ build:
                     - 'sudo apt-get install unzip unrar'
                     - 'composer self-update'
                     - 'composer config minimum-stability dev'
-                    - 'composer require phpunit/phpunit:^8.2 --dev',
+                    - 'composer require phpunit/phpunit:^8.2 --dev'
                     - 'composer install --dev --no-interaction'
 filter:
     excluded_paths: [tests/*]
