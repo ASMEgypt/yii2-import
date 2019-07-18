@@ -6,7 +6,7 @@
 [![Packagist Downloads](https://img.shields.io/packagist/dt/execut/yii2-import.svg)](https://packagist.org/packages/execut/yii2-import/stats)
 
 # yii2-import
-Yii2 module for import data from files to database between activeRecord
+Fast and flexible Yii2 module for importing and synchronizing anything into the database through activeRecord
 
 ## Installation
 
@@ -84,6 +84,8 @@ You may output navigation of module inside your layout via execut/yii2-navigatio
     echo \execut\navigation\widgets\Header::widget();
 ```
 For more information about execut/yii2-navigation module, please read it [documentation](https://github.com/execut/yii2-navigation)
+
+Further instructions will be in Russian, because there is no time to translate, your help is welcome.
 
 ### Описание разделов
 #### Файлы
