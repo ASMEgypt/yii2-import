@@ -7,13 +7,17 @@ build:
             tests:
                 override:
                     - php-scrutinizer-run
+                    - command: phpunit
+                      coverage:
+                        file: tests/_log/clover.xml
+                        format: clover
             dependencies:
                 # Runs before inferred commands
                 before:
+                    - 'sudo apt-get install unzip unrar'
                     - 'composer config minimum-stability dev'
 filter:
     excluded_paths: [tests/*]
-
 checks:
     php:
         remove_extra_empty_lines: true
