@@ -9,7 +9,7 @@ matrix:
 before_install:
   - sudo apt-get update
   - sudo apt-get install -y unrar unzip
-  - phpenv config-rm xdebug.ini
+#  - phpenv config-rm xdebug.ini //disable xdebug
 
 # Install packages those will be required during build
 before_script:
@@ -25,7 +25,7 @@ script:
   - phpunit --verbose $PHPUNIT_FLAGS
 
 after_script:
-  - php vendor/bin/coveralls
+  - php vendor/bin/php-coveralls
 
 # Cache folder, you can delete cache from Travis CI web interface
 cache:
