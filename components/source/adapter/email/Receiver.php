@@ -45,17 +45,13 @@ class Receiver extends Component
     }
 
     protected function _getMails() {
-        if ($this->mails !== null) {
-            return $this->mails;
-        }
-
         $mailsIds = $this->imap->searchMailBox($this->getSearchCriteria());
         $mails = [];
         foreach ($mailsIds as $id) {
             $mails[] = self::createMailFromImap($this->imap->getMail($id, false));
         }
 
-        return $this->mails = $mails;
+        return $mails;
     }
 
     /**
