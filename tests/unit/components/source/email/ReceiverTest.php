@@ -35,7 +35,7 @@ class ReceiverTest extends TestCase
             'imap' => $imap,
             'now' => $now,
         ]);
-        $receiver->getMails();
+
         $result = $receiver->getMails();
         $this->assertCount(1, $result);
         $this->assertInstanceOf(Mail::class, $result[0]);
