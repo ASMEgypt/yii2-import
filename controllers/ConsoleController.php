@@ -8,6 +8,7 @@
 namespace execut\import\controllers;
 
 
+use execut\crudFields\fields\Field;
 use execut\import\components\Importer;
 use execut\import\components\parser\exception\Exception;
 use execut\import\components\parser\Stack;
@@ -227,6 +228,7 @@ class ConsoleController extends Controller
                         echo 'File with md5 ' . $md5 . ' is already exists' . "\n";
                     } else {
                         $importFile = new File();
+                        $importFile->scenario = Field::SCENARIO_FORM;
                         $fileInfo = pathinfo($file->filePath);
                         $importFile->attributes = [
                             'name' => $file->fileName,
