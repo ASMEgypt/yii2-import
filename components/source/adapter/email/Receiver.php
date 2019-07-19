@@ -22,6 +22,7 @@ class Receiver extends Component
      */
     public $imap = null;
     public $now = null;
+    public $cache = null;
     protected $searchCriteria = null;
     protected $mails;
 
@@ -45,13 +46,23 @@ class Receiver extends Component
     }
 
     protected function _getMails() {
+        if ($this->cache !== null) {
+            if ($mails = $this->cache->get()) {
+                return $mails;
+            }
+        }
+
         $mailsIds = $this->imap->searchMailBox($this->getSearchCriteria());
         $mails = [];
         foreach ($mailsIds as $id) {
             $mails[] = self::createMailFromImap($this->imap->getMail($id, false));
         }
 
-        return $mails;
+        if ($this->cache !== null) {
+            $this->cache->set($mails);
+        }
+
+        return $this->mails = $mails;
     }
 
     /**

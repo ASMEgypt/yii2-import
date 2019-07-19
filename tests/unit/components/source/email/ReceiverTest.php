@@ -15,6 +15,8 @@ use execut\import\tests\TestCase;
 use roopz\imap\Imap;
 use roopz\imap\IncomingMail;
 use roopz\imap\IncomingMailAttachment;
+use yii\caching\Cache;
+use yii\caching\CacheInterface;
 
 class ReceiverTest extends TestCase
 {
@@ -34,8 +36,9 @@ class ReceiverTest extends TestCase
         $receiver = new Receiver([
             'imap' => $imap,
             'now' => $now,
+            'cache' => new ReceiverCacheStub(),
         ]);
-
+        $receiver->getMails();
         $result = $receiver->getMails();
         $this->assertCount(1, $result);
         $this->assertInstanceOf(Mail::class, $result[0]);
@@ -104,5 +107,18 @@ class ReceiverTest extends TestCase
         $file = $mail->attachments[0];
         $this->assertEquals('filePath', $file->filePath);
         $this->assertEquals('fileName', $file->fileName);
+    }
+}
+
+class ReceiverCacheStub extends ReceiverCache {
+    public $cache = null;
+    public function get()
+    {
+        return $this->cache;
+    }
+
+    public function set($mails)
+    {
+        return $this->cache = $mails;
     }
 }

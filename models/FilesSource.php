@@ -5,6 +5,7 @@ namespace execut\import\models;
 use execut\import\components\source\adapter\Email;
 use execut\import\components\source\adapter\email\Filter;
 use execut\import\components\source\adapter\email\Receiver;
+use execut\import\components\source\adapter\email\ReceiverCache;
 use execut\import\components\source\adapter\Ftp;
 use execut\import\components\source\adapter\Site;
 use execut\yii\base\Exception;
@@ -36,17 +37,13 @@ class FilesSource extends base\FilesSource
     public function getAdapterForSetting(Setting $setting) {
         switch ($this->key) {
             case self::TYPE_EMAIL:
-                if (self::$emailAdapter === null) {
-                    self::$emailAdapter = new Email([
-                        'receiver' => new Receiver([
-                            'imap' => \yii::$app->imap->connection,
-                            //                    'searchCriteria' => 'FROM "info@avto-zapad.ru" SINCE "' . date('d F Y') . '"',
-                            'filter' => new Filter(),
-                        ]),
-                    ]);
-                }
-
-                $adapter = self::$emailAdapter;
+                $adapter = new Email([
+                    'receiver' => new Receiver([
+                        'imap' => \yii::$app->imap->connection,
+                        'filter' => new Filter(),
+                        'cache' => new ReceiverCache()
+                    ]),
+                ]);
                 /**
                  * @var Filter $filter
                  */
