@@ -5,7 +5,6 @@ namespace execut\import\models;
 use execut\import\components\source\adapter\Email;
 use execut\import\components\source\adapter\email\Filter;
 use execut\import\components\source\adapter\email\Receiver;
-use execut\import\components\source\adapter\email\ReceiverCache;
 use execut\import\components\source\adapter\Ftp;
 use execut\import\components\source\adapter\Site;
 use execut\yii\base\Exception;
@@ -25,7 +24,7 @@ use yii\helpers\ArrayHelper;
  */
 class FilesSource extends base\FilesSource
 {
-    protected static $emailAdapter = null;
+    public static $emailAdapter = null;
 //    const ALL_TYPES = [
 //        self::TYPE_EMAIL,
 //        self::TYPE_FTP,
@@ -37,13 +36,16 @@ class FilesSource extends base\FilesSource
     public function getAdapterForSetting(Setting $setting) {
         switch ($this->key) {
             case self::TYPE_EMAIL:
-                $adapter = new Email([
-                    'receiver' => new Receiver([
-                        'imap' => \yii::$app->imap->connection,
-                        'filter' => new Filter(),
-                        'cache' => new ReceiverCache()
-                    ]),
-                ]);
+                if (self::$emailAdapter === null) {
+                    self::$emailAdapter = new Email([
+                        'receiver' => new Receiver([
+                            'imap' => \yii::$app->imap->connection,
+                            'filter' => new Filter(),
+                        ]),
+                    ]);
+                }
+
+                $adapter = self::$emailAdapter;
                 /**
                  * @var Filter $filter
                  */

@@ -211,6 +211,7 @@ class ConsoleController extends Controller
          * @var Setting[] $importSettings
          */
         $importSettings = $q->all();
+        FilesSource::$emailAdapter = null;
         foreach ($importSettings as $setting) {
             $source = $setting->getSource();
             $files = $source->getFiles();

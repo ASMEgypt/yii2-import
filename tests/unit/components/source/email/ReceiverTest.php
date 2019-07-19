@@ -36,7 +36,6 @@ class ReceiverTest extends TestCase
         $receiver = new Receiver([
             'imap' => $imap,
             'now' => $now,
-            'cache' => new ReceiverCacheStub(),
         ]);
         $receiver->getMails();
         $result = $receiver->getMails();
@@ -107,18 +106,5 @@ class ReceiverTest extends TestCase
         $file = $mail->attachments[0];
         $this->assertEquals('filePath', $file->filePath);
         $this->assertEquals('fileName', $file->fileName);
-    }
-}
-
-class ReceiverCacheStub extends ReceiverCache {
-    public $cache = null;
-    public function get()
-    {
-        return $this->cache;
-    }
-
-    public function set($mails)
-    {
-        return $this->cache = $mails;
     }
 }
