@@ -147,7 +147,7 @@ Further instructions will be in Russian, because there is no time to translate, 
 ###### Systemd
 Через службу systemd желательней, поскольку ею пользоваться удобнее и не нужно заботиться об отказоустойчивости демона.
 Служба сама будет перезапускаться в случае его отказа. Для настройки службы нужно создать unit нового сервиса. В случае
-ubuntu для этого нужно создать файл yii2-import.service в папке /etc/systemd/user/ со следующим содержимым:
+ubuntu для этого нужно создать файл yii2-import.service в папке /etc/systemd/system/ со следующим содержимым:
 
 ```
 [Unit]
@@ -162,6 +162,8 @@ Restart=always
 [Install]
 WantedBy=multi-user.target
 ```
+
+После этого можно запустить службу командой service yii2-import start и следить за ней через лог /var/log/syslog
 
 ###### Cron
 

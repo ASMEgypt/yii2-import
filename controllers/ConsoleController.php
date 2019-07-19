@@ -249,7 +249,7 @@ class ConsoleController extends Controller
     public function actionCheckSourceDaemon($type = 'email') {
         while (true) {
             $this->actionCheckSource($type);
-            sleep(60 * 5);
+            sleep(60);
         }
     }
 
