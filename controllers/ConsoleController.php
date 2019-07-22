@@ -46,7 +46,10 @@ class ConsoleController extends Controller
         $id = $this->fileId;
         $this->clearOldFiles();
         $q = File::find();
-        $this->markErrorFiles();
+        if (YII_ENV !== 'dev') {
+            $this->markErrorFiles();
+        }
+
         if ($id === null) {
             $q->byHostName(gethostname());
             $q->isForImport()->isOnlyFresh()->orderBy('created ASC');

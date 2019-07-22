@@ -96,10 +96,6 @@ class SettingsSheet extends base\SettingsSheet
         $extractor = new SettingsValueExtractor();
         $typesSettings = self::getParsersByTypesSettings();
         foreach ($this->settingsSets as $set) {
-            if ($set->type === 'details_base_id_new') {
-                continue;
-            }
-
             $typeSettings = [];
             foreach ($set->settingsValues as $value) {
                 $extractor->model = $value;
