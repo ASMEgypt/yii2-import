@@ -134,7 +134,14 @@ class FilterTest extends TestCase
                         'fileName' => 'test.xls',
                     ]),
                 ],
-            ])
+            ]),
+            new Mail([
+                'attachments' => [
+                    new File([
+                        'fileName' => 'testjpg',
+                    ]),
+                ],
+            ]),
         ]);
         $this->assertCount(1, $mails);
         $this->assertCount(2, $mails[0]->attachments);

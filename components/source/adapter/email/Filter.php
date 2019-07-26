@@ -69,7 +69,7 @@ class Filter extends Component
             return;
         }
 
-        foreach ($mails as $mail) {
+        foreach ($mails as $key => $mail) {
             if (empty($mail->attachments)) {
                 continue;
             }
@@ -81,6 +81,9 @@ class Filter extends Component
                 }
             }
 
+            if (empty($attachments)) {
+                unset($mails[$key]);
+            }
             $mail->attachments = $attachments;
         }
     }
