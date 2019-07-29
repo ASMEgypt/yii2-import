@@ -125,13 +125,7 @@ class FilterTest extends TestCase
             new Mail([
                 'attachments' => [
                     new File([
-                        'fileName' => 'testjpg',
-                    ]),
-                    new File([
                         'fileName' => 'test.jpg',
-                    ]),
-                    new File([
-                        'fileName' => 'test.xls',
                     ]),
                 ],
             ]),
@@ -144,7 +138,6 @@ class FilterTest extends TestCase
             ]),
         ]);
         $this->assertCount(1, $mails);
-        $this->assertCount(2, $mails[0]->attachments);
     }
 
     public function testBugWithFiltrateByRolfSubject() {

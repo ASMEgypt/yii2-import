@@ -84,7 +84,6 @@ class Filter extends Component
             if (empty($attachments)) {
                 unset($mails[$key]);
             }
-            $mail->attachments = $attachments;
         }
     }
 
