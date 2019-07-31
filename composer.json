@@ -19,7 +19,7 @@
     "execut/yii2-crud-fields": "*",
     "execut/yii2-navigation": "*",
     "execut/yii2-multiprocess": "*",
-    "roopz/yii2-imap": "*",
+    "execut/yii2-imap": "*",
     "guzzlehttp/guzzle": "*",
     "yii2mod/yii2-ftp": "*"
   },
