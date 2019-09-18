@@ -273,7 +273,17 @@ class ModelsExtractor extends Component
                         if (empty($row[$attributeParams['column'] - 1])) {
                             continue 2;
                         } else {
-                            $attributes[$attribute] = $row[$attributeParams['column'] - 1];
+                            $value = $row[$attributeParams['column'] - 1];
+                            if (!empty($attributeParams['numberDelimiter'])) {
+                                if ($attributeParams['numberDelimiter'] == ',') {
+                                    $value = str_replace('.', '', $value);
+                                    $value = str_replace(',', '.', $value);
+                                } else if ($attributeParams['numberDelimiter'] == '.') {
+                                    $value = str_replace(',', '', $value);
+                                }
+                            }
+
+                            $attributes[$attribute] = $value;
                         }
                     }
                 }
@@ -315,10 +325,6 @@ class ModelsExtractor extends Component
 
                 $models[$rowNbr] = $model;
             }
-
-//            if ($model->isNewRecord && empty($this->isNoCreate)) {
-//                echo 1;
-//            }
         }
 
         $this->endOperation('models collect');
@@ -393,6 +399,7 @@ class ModelsExtractor extends Component
 
         $isNewRecord = ($model->isNewRecord && !$this->isNoCreate);
         $isUpdatedRecord = (!$model->isNewRecord && !$this->isNoUpdate && !empty($model->dirtyAttributes));
+
         if ($isNewRecord || $isUpdatedRecord) {
             if ($isNewRecord) {
                 $reason = 'created';
