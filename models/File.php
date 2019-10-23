@@ -414,7 +414,6 @@ class File extends base\File implements DynaGridRow
     }
 
     public function triggerException() {
-        $this->triggerErrorRow();
         $this->end_date = date('Y-m-d H:i:s');
         $this->setStatus(FilesStatuse::ERROR);
         $this->save();
