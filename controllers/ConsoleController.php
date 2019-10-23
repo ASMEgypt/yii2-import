@@ -127,6 +127,7 @@ class ConsoleController extends Controller
          */
         $files = File::find()->byHostName(gethostname())->isWithoutProcess()->isInProgress()->all();
         foreach ($files as $file) {
+            $this->stdout('File ' . $file->id . ' start mark as error' . "\n");
             $attributes = [
                 'level' => Logger::LEVEL_ERROR,
                 'category' => 'import.notFoundProcess',
