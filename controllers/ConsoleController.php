@@ -163,10 +163,10 @@ class ConsoleController extends Controller
 
     protected function parseFile(File $file) {
         $this->stdout('Start parse file #' . $file->id . ' ' . $file->name . "\n");
-        $data = $file->getRows();
-//        $data = array_splice($data, 23400, 1000000);
-        $file->scenario = 'import';
         try {
+            $file->scenario = 'import';
+            $data = $file->getRows();
+    //        $data = array_splice($data, 23400, 1000000);
             ini_set('error_reporting', E_ERROR);
             $file->rows_count = count($data);
             $file->save();
