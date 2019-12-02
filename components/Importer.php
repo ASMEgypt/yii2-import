@@ -44,7 +44,7 @@ class Importer extends Component {
         $attributes = [
             'level' => Logger::LEVEL_ERROR,
             'category' => 'import.fatalError',
-            'row_nbr' => $rowNbr,
+            'row_nbr' => $currentRowNbr,
             'column_nbr' => $columnNbr,
             'message' => $message,
         ];

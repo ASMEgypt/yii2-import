@@ -26,6 +26,7 @@ class ConsoleController extends Controller
 {
     public $loadsLimit = 20;
     public $stackSize = 650;
+    public $offset = 0;
     public $fileId = null;
     protected $lastCheckedRow = 0;
 
@@ -35,6 +36,7 @@ class ConsoleController extends Controller
             return [
                 'fileId',
                 'stackSize',
+                'offset',
             ];
         }
         // $actionId might be used in subclasses to provide options specific to action id
@@ -166,6 +168,9 @@ class ConsoleController extends Controller
         try {
             $file->scenario = 'import';
             $data = $file->getRows();
+            if ($this->offset > 0) {
+                $data = array_splice($data, $this->offset);
+            }
     //        $data = array_splice($data, 23400, 1000000);
             ini_set('error_reporting', E_ERROR);
             $file->rows_count = count($data);

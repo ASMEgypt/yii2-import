@@ -16,4 +16,6 @@ return [
     'Email Title Match' => 'Title match',
     'Email Attachment Template' => 'Attachment template',
     'Import Files Encoding' => 'File encoding',
+    'SettingsSets' => 'Sets',
+    'SettingsValues' => 'Values',
 ];

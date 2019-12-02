@@ -71,5 +71,8 @@ return [
     'Prefix' => 'Префикс',
     'Row Nbr' => 'Строчка',
     'Value' => 'Значение',
-    'Process' => 'Id процесса'
+    'Process' => 'Id процесса',
+
+    'SettingsSets' => 'Наборы',
+    'SettingsValues' => 'Значения',
 ];

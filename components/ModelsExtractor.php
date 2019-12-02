@@ -28,6 +28,7 @@ class ModelsExtractor extends Component
     public $scopes = null;
     public $isImport = false;
     public $attributes = [];
+    public $scenario = null;
     /**
      * @var Importer
      */
@@ -131,6 +132,12 @@ class ModelsExtractor extends Component
                         }
 
                         $whereValues[$rowNbr][$attribute] = (int)$model->id;
+                    } else {
+                        if ($model->isNewRecord && empty($extractor->isNoCreate)) {
+                            if (!$this->saveModel($model, $rowNbr, false)) {
+                                unset($relationsModels[$rowNbr][$attribute]);
+                            }
+                        }
                     }
                 }
             } else {
@@ -151,7 +158,7 @@ class ModelsExtractor extends Component
                         }
 
                         if (empty($row[$attributeParams['column'] - 1])) {
-                            $this->logError($attribute . ' is required for record find', $rowNbr, null, $attributeParams['column']);
+                            $this->logError($attribute . ' is required for record find. Extractor: ' . $this->id, $rowNbr, null, $attributeParams['column'], $isMarkBad);
                             unset($whereValues[$rowNbr]);
                             continue;
                         }
@@ -242,6 +249,7 @@ class ModelsExtractor extends Component
 
         $models = [];
         $this->startOperation('models collect');
+
         foreach ($this->importer->rows as $rowNbr => $row) {
             if ($this->isBadRow($rowNbr)) {
                 continue;
@@ -271,7 +279,7 @@ class ModelsExtractor extends Component
                         }
 
                         if (empty($row[$attributeParams['column'] - 1])) {
-                            continue 2;
+                            continue;
                         } else {
                             $attributes[$attribute] = $row[$attributeParams['column'] - 1];
                         }
@@ -311,15 +319,17 @@ class ModelsExtractor extends Component
 
             $modelAttributes = $model->getAttributes(array_keys($attributes));
             if (!$isSave || $model->isNewRecord || array_diff($attributes, $modelAttributes)) {
+                if ($this->scenario) {
+                    $model->scenario = $this->scenario;
+                }
+
                 $model->attributes = $attributes;
 
                 $models[$rowNbr] = $model;
             }
-
-//            if ($model->isNewRecord && empty($this->isNoCreate)) {
-//                echo 1;
-//            }
         }
+
+
 
         $this->endOperation('models collect');
 
@@ -380,14 +390,17 @@ class ModelsExtractor extends Component
      * @param $model
      * @return mixed
      */
-    protected function saveModel($model, $rowNbr)
+    protected function saveModel($model, $rowNbr, $isMarkBad = true)
     {
         $currentRowNbr = $this->importer->getCurrentStackRowNbr() + $rowNbr;
         $modelString = $model->tableName() . ' #' . $model->id . ' ' . serialize(array_filter($model->attributes));
         echo 'Row #' . $currentRowNbr . ': ';
+        if ($this->scenario) {
+            $model->scenario = $this->scenario;
+        }
         if (!$model->validate()) {
             $message = 'Error validate ' . $model->tableName() . ' #' . $model->id . ' ' . serialize(array_filter($model->attributes)) . ' ' . serialize($model->errors);
-            $this->logError($message, $rowNbr, $model);
+            $this->logError($message, $rowNbr, $model, null, $isMarkBad);
             return false;
         }
 
