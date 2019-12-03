@@ -355,6 +355,9 @@ class File extends base\File implements DynaGridRow
         ];
     }
 
+    /**
+     * @return \execut\import\models\queries\File
+     */
     public static function find()
     {
         $q = new \execut\import\models\queries\File(__CLASS__);
