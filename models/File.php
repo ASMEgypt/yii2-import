@@ -179,11 +179,13 @@ class File extends base\File implements DynaGridRow
                     'start_date' => [
                         'class' => Date::class,
                         'attribute' => 'start_date',
+                        'isTime' => true,
                         'displayOnly' => true,
                     ],
                     'end_date' => [
                         'class' => Date::class,
                         'attribute' => 'end_date',
+                        'isTime' => true,
                         'displayOnly' => true,
                     ],
                     'logsGrouped' => [
