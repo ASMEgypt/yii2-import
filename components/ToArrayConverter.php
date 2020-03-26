@@ -156,6 +156,7 @@ class ToArrayConverter extends Component
     }
 
     public function getCache() {
+        return false;
         if ($this->cache !== null) {
             return $this->cache;
         }

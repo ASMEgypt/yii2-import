@@ -191,11 +191,13 @@ class File extends base\File implements DynaGridRow
                     'logsGrouped' => [
                         'class' => HasManyMultipleInput::class,
                         'order' => 115,
+                        'columnRecordsLimit' => 10,
                         'attribute' => 'logsGrouped',
                         'relation' => 'logsGrouped',
                         'isGridForOldRecords' => true,
                         'scope' => false,
                         'column' => false,
+                        'with' => false,
                         'field' => false,
                         'gridOptions' => [
                             'responsiveWrap' => false,
@@ -205,8 +207,10 @@ class File extends base\File implements DynaGridRow
                     'logs' => [
                         'class' => HasManyMultipleInput::class,
                         'order' => 115,
+                        'columnRecordsLimit' => 10,
                         'attribute' => 'logs',
                         'relation' => 'logs',
+                        'with' => false,
                         'isGridForOldRecords' => true,
                         'scope' => false,
                         'column' => false,
