@@ -278,10 +278,11 @@ class ModelsExtractor extends Component
                             throw new Exception('Not setted column for attribute ' . $attribute . ' for extractor ' . $this->id);
                         }
 
-                        if (empty($row[$attributeParams['column'] - 1])) {
+                        $columnNbr = $attributeParams['column'] - 1;
+                        if (!array_key_exists($columnNbr, $row) || trim($row[$columnNbr]) === '') {
                             continue;
                         } else {
-                            $attributes[$attribute] = $row[$attributeParams['column'] - 1];
+                            $attributes[$attribute] = $row[$columnNbr];
                         }
                     }
                 }
