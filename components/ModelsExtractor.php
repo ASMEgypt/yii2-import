@@ -306,6 +306,13 @@ class ModelsExtractor extends Component
                 $searchedAttributes[$attributesName] = $value;
             }
 
+            foreach ($attributes as $attributesName => $value) {
+                if (method_exists($modelClass, 'filtrateAttribute')) {
+                    $value = $modelClass::filtrateAttribute($attributesName, $value);
+                    $attributes[$attributesName] = $value;
+                }
+            }
+
             $uniqueKey = serialize($searchedAttributes);
             if (isset($this->modelsByUniqueKey[$uniqueKey])) {
                 $model = $this->modelsByUniqueKey[$uniqueKey];

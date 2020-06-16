@@ -85,4 +85,8 @@ class FilesSource extends base\FilesSource
 
         return $adapter;
     }
+
+    public static function getIdByKey($key) {
+        return self::find()->andWhere(['key' => $key])->select('id')->scalar();
+    }
 }
